@@ -5,7 +5,6 @@ const getPersons = async (baseName) => {
   try {
     const apiURL = `${baseURL}/?search=${baseName}&format=json`;
     const response = await get(apiURL);
-    console.log(response);
 
     if (!response.data || response.data.results.length === 0) {
       throw new Error('Could not get this persons');

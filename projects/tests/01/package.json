@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
     "axios": "^0.21.1"
-  },
-  "devDependencies": {
-    "mocha": "^8.2.1",
-    "nock": "^13.0.7"
   }
 }
