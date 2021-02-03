@@ -1,6 +1,5 @@
 const { deepStrictEqual, ok } = require('assert');
 const database = require('./database');
-const { v4 } = require('uuid');
 
 const DEFAULT_ITEM = { id: 1, name: 'anyHero', power: 'anyPower' };
 
@@ -17,16 +16,18 @@ describe('Manupulation of Heroes', () => {
   });
 
   it('should register a hero using files', async () => {
-    const expectedId = v4();
+    const expectedResponse = DEFAULT_ITEM;
 
-    const expectedRegisterItem = {
-      id: expectedId,
-      name: DEFAULT_ITEM.name,
-      power: DEFAULT_ITEM.power,
-    };
+    await database.register(expectedResponse);
+    const [current] = await database.get(expectedResponse.id);
+    deepStrictEqual(current, expectedResponse);
+  });
 
-    await database.register(expectedRegisterItem);
-    const [current] = await database.get(expectedId);
-    deepStrictEqual(current, expectedRegisterItem);
+  it('should remove a hero by id', async () => {
+    const expectedResponse = DEFAULT_ITEM;
+    const expected = true;
+    const result = await database.delete(expectedResponse.id);
+
+    deepStrictEqual(expected, result);
   });
 });

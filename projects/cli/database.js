@@ -39,6 +39,22 @@ class Database {
     const result = await this.writeDataOnFile(dataToWrite);
     return result;
   }
+
+  async delete(id) {
+    if (!id) {
+      return await this.writeDataOnFile([]);
+    }
+
+    const data = await this.getDataFromFile(id);
+    const index = data.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      throw new Error('This hero does not exists');
+    }
+
+    data.splice(index, 1);
+    return await this.writeDataOnFile(data);
+  }
 }
 
 module.exports = new Database();
