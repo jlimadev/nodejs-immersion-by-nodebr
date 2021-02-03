@@ -58,15 +58,11 @@ class Database {
 
     const data = await this.getDataFromFile(id);
     const index = data.findIndex((item) => item.id === id);
+    const updatedBody = { id, ...body };
 
     if (index === -1) {
       throw new Error('This hero does not exists');
     }
-
-    const updatedBody = {
-      id,
-      ...body,
-    };
 
     data.splice(index, 1, updatedBody);
     return await this.writeDataOnFile(data);
