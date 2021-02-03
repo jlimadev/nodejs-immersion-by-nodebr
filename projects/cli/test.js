@@ -5,7 +5,7 @@ const DEFAULT_ITEM = { id: 1, name: 'anyHero', power: 'anyPower' };
 
 describe('Manupulation of Heroes', () => {
   before(async () => {
-    await database.register(DEFAULT_ITEM);
+    await database.add(DEFAULT_ITEM);
   });
 
   it('should search a hero using a file', async () => {
@@ -15,10 +15,10 @@ describe('Manupulation of Heroes', () => {
     deepStrictEqual(firstResponse, expectedResponse);
   });
 
-  it('should register a hero using files', async () => {
+  it('should add a hero using files', async () => {
     const expectedResponse = DEFAULT_ITEM;
 
-    await database.register(expectedResponse);
+    await database.add(expectedResponse);
     const [current] = await database.get(expectedResponse.id);
     deepStrictEqual(current, expectedResponse);
   });

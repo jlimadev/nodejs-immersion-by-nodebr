@@ -31,7 +31,7 @@ class Database {
     return filteredData;
   }
 
-  async register(hero) {
+  async add(hero) {
     const data = await this.getDataFromFile();
     const id = v4();
     const returnObject = { id, ...hero };
