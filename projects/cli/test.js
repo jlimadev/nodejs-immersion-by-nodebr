@@ -2,11 +2,13 @@ const { deepStrictEqual, ok } = require('assert');
 const database = require('./database');
 const { v4 } = require('uuid');
 
-const id = v4();
 const DEFAULT_ITEM = { id: 1, name: 'anyHero', power: 'anyPower' };
 
 describe('Manupulation of Heroes', () => {
-  before(async () => {});
+  before(async () => {
+    await database.register(DEFAULT_ITEM);
+  });
+
   it('should search a hero using a file', async () => {
     const expectedResponse = DEFAULT_ITEM;
     const [firstResponse] = await database.get();
