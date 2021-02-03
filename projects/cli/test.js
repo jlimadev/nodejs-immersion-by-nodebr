@@ -1,4 +1,4 @@
-const { deepStrictEqual, ok } = require('assert');
+const { deepStrictEqual } = require('assert');
 const database = require('./database');
 
 const DEFAULT_ITEM = { id: 1, name: 'anyHero', power: 'anyPower' };
@@ -23,10 +23,19 @@ describe('Manupulation of Heroes', () => {
     deepStrictEqual(current, expectedResponse);
   });
 
+  it('should update the hero data by id', async () => {
+    const newBody = { name: 'newName', power: 'newPower' };
+    const expectedResponse = { id: 1, name: 'newName', power: 'newPower' };
+    const result = await database.update(DEFAULT_ITEM.id, newBody);
+    const [changeResult] = await database.get(DEFAULT_ITEM.id);
+
+    deepStrictEqual(true, result);
+    deepStrictEqual(changeResult, expectedResponse);
+  });
+
   it('should remove a hero by id', async () => {
-    const expectedResponse = DEFAULT_ITEM;
     const expected = true;
-    const result = await database.delete(expectedResponse.id);
+    const result = await database.delete();
 
     deepStrictEqual(expected, result);
   });

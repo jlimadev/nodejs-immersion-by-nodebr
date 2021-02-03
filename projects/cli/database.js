@@ -25,19 +25,51 @@ class Database {
 
   async get(id) {
     const response = await this.getDataFromFile();
+
     const filteredData = response.filter((data) =>
       id ? data.id === id : true,
     );
+
     return filteredData;
   }
 
-  async add(hero) {
+  async add(body) {
+    if (!body) {
+      throw new Error('You must send the body of this request');
+    }
+
     const data = await this.getDataFromFile();
     const id = v4();
-    const returnObject = { id, ...hero };
-    const dataToWrite = [...data, returnObject];
-    const result = await this.writeDataOnFile(dataToWrite);
-    return result;
+
+    const returnObject = { id, ...body };
+    const dataToWrite = data ? [...data, returnObject] : [returnObject];
+
+    return await this.writeDataOnFile(dataToWrite);
+  }
+
+  async update(id, body) {
+    if (!id) {
+      throw new Error('You must inform an id');
+    }
+
+    if (!body) {
+      throw new Error('You must send the body of this request');
+    }
+
+    const data = await this.getDataFromFile(id);
+    const index = data.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      throw new Error('This hero does not exists');
+    }
+
+    const updatedBody = {
+      id,
+      ...body,
+    };
+
+    data.splice(index, 1, updatedBody);
+    return await this.writeDataOnFile(data);
   }
 
   async delete(id) {
@@ -53,6 +85,7 @@ class Database {
     }
 
     data.splice(index, 1);
+
     return await this.writeDataOnFile(data);
   }
 }
