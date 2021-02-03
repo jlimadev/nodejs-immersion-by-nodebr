@@ -1,6 +1,9 @@
-const { readFile } = require('fs');
+const { readFile, writeFile } = require('fs');
 const { promisify } = require('util');
+const { v4 } = require('uuid');
+
 const readFileAsync = promisify(readFile);
+const writeFileAsync = promisify(writeFile);
 
 // instead of using require fs to read the file we can import directly the json file
 // const jsonFile = require('./heroes.json');
@@ -15,8 +18,9 @@ class Database {
     return JSON.parse(file.toString());
   }
 
-  async writeDataOnFile() {
-    return null;
+  async writeDataOnFile(data) {
+    await writeFileAsync(this.FILE_NAME, JSON.stringify(data));
+    return true;
   }
 
   async get(id) {
@@ -25,6 +29,15 @@ class Database {
       id ? data.id === id : true,
     );
     return filteredData;
+  }
+
+  async register(hero) {
+    const data = await this.getDataFromFile();
+    const id = v4();
+    const returnObject = { id, ...hero };
+    const dataToWrite = [...data, returnObject];
+    const result = await this.writeDataOnFile(dataToWrite);
+    return result;
   }
 }
 
