@@ -1,0 +1,19 @@
+{
+  "name": "nodejs-immersion-by-nodebr",
+  "version": "1.0.0",
+  "description": "NodeJS immersion by @nodebr and @erickwendel",
+  "author": "jlimadev",
+  "license": "MIT",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "projects/**"
+    ],
+    "nohoist": [
+      "**"
+    ]
+  },
+  "devDependencies": {
+    "lerna": "^3.22.1"
+  }
+}
