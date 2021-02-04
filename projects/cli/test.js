@@ -1,5 +1,6 @@
 const { deepStrictEqual } = require('assert');
-const database = require('./database');
+const { assert } = require('chai');
+const database = require('./services/database');
 
 const DEFAULT_ITEM = { id: 1, name: 'anyHero', power: 'anyPower' };
 
@@ -9,10 +10,10 @@ describe('Manupulation of Heroes', () => {
   });
 
   it('should search a hero using a file', async () => {
-    const expectedResponse = DEFAULT_ITEM;
+    const expectedResponseKeys = ['id', 'name', 'power'];
     const [firstResponse] = await database.get();
 
-    deepStrictEqual(firstResponse, expectedResponse);
+    assert.hasAllKeys(firstResponse, expectedResponseKeys);
   });
 
   it('should add a hero using files', async () => {
