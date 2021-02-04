@@ -1,3 +1,11 @@
+# Multi Database Project
+
+Using Strategy Design Pattern to implement this multi-database project.
+
+For this project you can Postgres or MongoDB, but if you want to add any other database, feel free to do it.
+
+Bellow the docker commands used to create it.
+
 ### Postgres Database
 
 ```
