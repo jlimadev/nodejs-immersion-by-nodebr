@@ -1,18 +1,19 @@
 const { program } = require('commander');
-const Hero = require('./Hero');
-const Database = require('./database');
+const Hero = require('./model/Hero');
+const Database = require('./services/database');
 
 (async () => {
   /**
    * node cli.js --help
    */
+  const DEFAULT = 'ALL';
   program
     .version('v1')
     .option('-n, --name [value]', 'add name')
     .option('-p, --power [value]', 'add power')
     //CRUD
     .option('-a, --add', 'register hero')
-    .option('-g, --get [value]', 'get hero by id', false)
+    .option('-g, --get [value]', 'get hero by id', DEFAULT)
     .option('-u, --update [value]', 'update hero by id')
     .option('-d, --delete [value]', 'delete hero by id')
     .parse(process.argv);
@@ -38,7 +39,8 @@ const Database = require('./database');
     if (options.get) {
       const id = options.get;
       console.log(id);
-      const result = await Database.get(id);
+      const result =
+        id === DEFAULT ? await Database.get() : await Database.get(id);
       console.log(result);
       return;
     }
