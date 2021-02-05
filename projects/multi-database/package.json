@@ -2,5 +2,14 @@
   "name": "multi-database",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha ./src/tests/*.test.js",
+    "test:watch": "mocha ./src/tests/*.test.js -w"
+  },
+  "dependencies": {
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.5.0"
+  }
 }

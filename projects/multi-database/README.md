@@ -68,3 +68,6 @@ docker run \
 ```
 
 We can also use MongoDBCompass
+
+With postgres we must install the packages bellow
+`yarn add sequelize pg-hstore pg`
