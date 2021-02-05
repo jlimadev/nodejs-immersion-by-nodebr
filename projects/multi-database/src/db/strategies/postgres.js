@@ -5,16 +5,11 @@ class Postgres extends ICrud {
     super();
     this._driver = null;
     this._heroes = null;
-    this._connect();
   }
 
-  _connect() {
-    this._driver = new Sequelize('heroes', 'root', 'root', {
-      host: 'localhost',
-      dialect: 'postgres',
-      quoteIdentifiers: false,
-      operatorsAliases: 0,
-    });
+  async create(item) {
+    const { dataValues } = await this._heroes.create(item);
+    return dataValues;
   }
 
   async isConnected() {
@@ -25,6 +20,16 @@ class Postgres extends ICrud {
       console.error('Failed', error);
       return false;
     }
+  }
+
+  async connect() {
+    this._driver = new Sequelize('heroes', 'root', 'root', {
+      host: 'localhost',
+      dialect: 'postgres',
+      quoteIdentifiers: false,
+      operatorsAliases: 0,
+    });
+    await this.defineModel();
   }
 
   async defineModel() {
@@ -52,11 +57,7 @@ class Postgres extends ICrud {
         timestamps: false,
       },
     );
-    await _heroes.sync();
-  }
-
-  create(item) {
-    console.info('The item was created successfully on Postgres');
+    await this._heroes.sync();
   }
 }
 
