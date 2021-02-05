@@ -8,6 +8,7 @@ const MOCK_HERO = { name: 'Ruru', power: 'Gordin' };
 describe('Postgres Srategy', () => {
   before(async () => {
     await context.connect();
+    await context.create(MOCK_HERO);
   });
 
   it('Should connect to postgres database (isConnected)', async () => {
@@ -55,8 +56,9 @@ describe('Postgres Srategy', () => {
     deepStrictEqual(newItem, updatedResponseBody);
   });
 
-  it.only('Should DELETE by <ID> from postgres database', async () => {
+  it('Should DELETE by <ID> from postgres database', async () => {
     const [itemToDelete] = await context.read({ name: MOCK_HERO.name });
-    const id = itemToDelete.id;
+    const result = await context.delete(itemToDelete.id);
+    deepStrictEqual(result, 1);
   });
 });

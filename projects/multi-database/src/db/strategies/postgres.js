@@ -20,6 +20,11 @@ class Postgres extends ICrud {
     return await this._heroes.update(item, { where: { id: id } });
   }
 
+  async delete(id) {
+    const query = id ? { id } : {};
+    return await this._heroes.destroy({ where: query });
+  }
+
   async isConnected() {
     try {
       await this._driver.authenticate();
