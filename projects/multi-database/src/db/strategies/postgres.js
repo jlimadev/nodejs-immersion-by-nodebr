@@ -12,6 +12,11 @@ class Postgres extends ICrud {
     return dataValues;
   }
 
+  async read(item) {
+    const result = await this._heroes.findAll({ where: item, raw: true });
+    return result;
+  }
+
   async isConnected() {
     try {
       await this._driver.authenticate();

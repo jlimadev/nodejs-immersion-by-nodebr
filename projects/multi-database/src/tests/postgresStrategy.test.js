@@ -15,7 +15,7 @@ describe('Postgres Srategy', () => {
     deepStrictEqual(result, true);
   });
 
-  it('Should register a hero in the database', async () => {
+  it('Should CREATE a hero in the database', async () => {
     const expectedBody = MOCK_HERO;
     const expectedKeys = ['id', 'name', 'power'];
 
@@ -26,5 +26,11 @@ describe('Postgres Srategy', () => {
 
     deepStrictEqual(responseBody, expectedBody);
     deepStrictEqual(responseKeys, expectedKeys);
+  });
+
+  it.only('Should READ by <CRITERIA> from postgres database', async () => {
+    const [result] = await context.read({ name: MOCK_HERO.name });
+    const responseBody = { name: result.name, power: result.power };
+    deepStrictEqual(responseBody, MOCK_HERO);
   });
 });
