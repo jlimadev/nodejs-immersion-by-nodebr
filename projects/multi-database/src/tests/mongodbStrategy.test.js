@@ -6,7 +6,7 @@ const context = new Context(new Mongodb());
 const MOCK_HERO = { name: 'Ruru', power: 'Gordin' };
 let REF_ID = '';
 
-describe.only('Mongodb Strategy', () => {
+describe('Mongodb Strategy', () => {
   before(async () => {
     await context.connect();
     await context.delete();
