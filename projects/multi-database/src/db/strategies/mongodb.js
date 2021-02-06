@@ -21,9 +21,13 @@ class MongoDb extends ICrud {
     return await this._heroes.create(item);
   }
 
-  async read(item) {}
+  async read(item, skip = 0, limit = 10) {
+    return await this._heroes.find(item).skip(skip).limit(limit);
+  }
 
-  async update(item) {}
+  async update(id, item) {
+    return await this._heroes.updateOne({ _id: id }, { $set: item });
+  }
 
   async delete(item) {}
 
