@@ -8,8 +8,10 @@
     "test:watch": "mocha ./src/tests/*.test.js -w"
   },
   "dependencies": {
+    "mongoose": "^5.11.15",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^6.5.0"
+    "sequelize": "^6.5.0",
+    "uuid": "^8.3.2"
   }
 }

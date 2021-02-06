@@ -8,6 +8,7 @@ const MOCK_HERO = { name: 'Ruru', power: 'Gordin' };
 describe('Postgres Srategy', () => {
   before(async () => {
     await context.connect();
+    await context.delete();
     await context.create(MOCK_HERO);
   });
 
@@ -43,7 +44,7 @@ describe('Postgres Srategy', () => {
     const id = itemToUpdate.id;
 
     // updating the item
-    const [result] = await context.update(newItem, id);
+    const [result] = await context.update(id, newItem);
 
     // getting the updated item to assert
     const [updatedItem] = await context.read({ id: id });
