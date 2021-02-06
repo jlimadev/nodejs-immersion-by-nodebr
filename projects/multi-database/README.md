@@ -4,6 +4,15 @@ Using Strategy Design Pattern to implement this multi-database project.
 
 For this project you can Postgres or MongoDB, but if you want to add any other database, feel free to do it.
 
+## Strategy Design Pattern
+
+In this repository we use the Strategy Design Pattern to deal with multi-database
+
+- For Postgres database we used the Sequelize
+- For MongoDB database we used Mongoose
+
+## Docker
+
 Bellow the docker commands used to create it.
 
 ### Postgres Database
