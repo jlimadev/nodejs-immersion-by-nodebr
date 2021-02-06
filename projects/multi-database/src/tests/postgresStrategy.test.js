@@ -8,6 +8,7 @@ const MOCK_HERO = { name: 'Ruru', power: 'Gordin' };
 describe('Postgres Srategy', () => {
   before(async () => {
     await context.connect();
+    await context.delete();
     await context.create(MOCK_HERO);
   });
 
