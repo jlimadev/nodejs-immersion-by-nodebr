@@ -1,5 +1,6 @@
 const Mongoose = require('mongoose');
 const { v4 } = require('uuid');
+const modelName = 'heroes';
 
 const heroesSchema = new Mongoose.Schema({
   _id: { type: String, required: true, default: v4 },
@@ -8,5 +9,6 @@ const heroesSchema = new Mongoose.Schema({
   createdAt: { type: Date, default: new Date() },
 });
 
-module.exports =
-  Mongoose.model.heroes || Mongoose.model('heroes', heroesSchema);
+module.exports = Mongoose.models[modelName]
+  ? Mongoose.model(modelName)
+  : Mongoose.model(modelName, heroesSchema);
