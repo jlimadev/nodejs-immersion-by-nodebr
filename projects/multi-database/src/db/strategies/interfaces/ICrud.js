@@ -25,7 +25,11 @@ class ICrud {
     throw new NotImplementedException();
   }
 
-  connect() {
+  static connect() {
+    throw new NotImplementedException();
+  }
+
+  static disconnect() {
     throw new NotImplementedException();
   }
 }
