@@ -1,17 +1,27 @@
-const Mongodb = require('../db/strategies/mongodb');
+const MongoDb = require('../db/strategies/mongodb/mongodb');
 const Context = require('../db/strategies/base/contextStrategy');
-const { deepStrictEqual, match } = require('assert');
+const HeroesSchema = require('../db/strategies/mongodb/schemas/heroesSchema');
+const { deepStrictEqual } = require('assert');
 
-const context = new Context(new Mongodb());
 const MOCK_HERO = { name: 'Ruru', power: 'Gordin' };
+let context = {};
 let REF_ID = '';
 
 describe('Mongodb Strategy', () => {
   before(async () => {
-    await context.connect();
+    const connection = MongoDb.connect();
+    context = new Context(new MongoDb(connection, HeroesSchema));
+
     await context.delete();
     const createdHero = await context.create(MOCK_HERO);
+
     REF_ID = createdHero._id;
+  });
+
+  after(async () => {
+    const result = await context.isConnected();
+    console.log('CONNECTION_STATUS', result);
+    MongoDb.disconnect();
   });
 
   it('Should Check the connection and return connected to mongodb', async () => {
