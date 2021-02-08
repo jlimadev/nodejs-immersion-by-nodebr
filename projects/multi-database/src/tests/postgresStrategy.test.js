@@ -1,15 +1,23 @@
-const Postgres = require('../db/strategies/postgres');
+const Postgres = require('../db/strategies/postgres/postgres');
 const Context = require('../db/strategies/base/contextStrategy');
+const HeroesSchema = require('../db/strategies/postgres/schemas/heroesSchema');
 const { deepStrictEqual } = require('assert');
 
-const context = new Context(new Postgres());
 const MOCK_HERO = { name: 'Ruru', power: 'Gordin' };
+let context = {};
+let connection = null;
 
 describe('Postgres Srategy', () => {
   before(async () => {
-    await context.connect();
+    connection = await Postgres.connect();
+    const model = await Postgres.defineModel(connection, HeroesSchema);
+    context = new Context(new Postgres(connection, model));
     await context.delete();
     await context.create(MOCK_HERO);
+  });
+
+  after(async () => {
+    await Postgres.disconnect(connection);
   });
 
   it('Should connect to postgres database (isConnected)', async () => {
