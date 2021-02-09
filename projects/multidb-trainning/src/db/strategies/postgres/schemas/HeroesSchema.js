@@ -5,7 +5,7 @@ const HeroesSchema = {
   schema: {
     id: {
       type: Sequelize.UUIDV4,
-      default: Sequelize.UUIDV4,
+      defaultValue: Sequelize.UUIDV4,
       required: true,
       primaryKey: true,
     },
