@@ -1,0 +1,24 @@
+{
+  "name": "multidb-trainning",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest  --config jest.config.js",
+    "test:watch": "jest  --config jest.config.js --watch",
+    "test:silent": "yarn test -- --silent"
+  },
+  "dependencies": {
+    "mongoose": "^5.11.15",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.5.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "jest": "^26.6.3"
+  }
+}
