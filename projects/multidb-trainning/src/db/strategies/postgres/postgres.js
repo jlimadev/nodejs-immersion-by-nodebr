@@ -8,7 +8,10 @@ class Postgres extends ICrud {
     this._schema = schema;
   }
 
-  async create(item) {}
+  async create(item) {
+    const { dataValues } = await this._schema.create(item);
+    return dataValues;
+  }
 
   async read(item, skip = 0, limit = 10) {}
 
