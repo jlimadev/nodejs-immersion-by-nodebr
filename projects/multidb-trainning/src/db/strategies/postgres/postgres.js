@@ -13,7 +13,14 @@ class Postgres extends ICrud {
     return dataValues;
   }
 
-  async read(item, skip = 0, limit = 10) {}
+  async read(item, skip = 0, limit = 10) {
+    return await this._schema.findAll({
+      where: item,
+      offset: skip,
+      limit: limit,
+      raw: true,
+    });
+  }
 
   update(id, item) {}
   delete(id) {}
