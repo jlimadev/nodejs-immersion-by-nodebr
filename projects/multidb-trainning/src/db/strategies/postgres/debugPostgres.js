@@ -11,9 +11,10 @@ const call = async () => {
 
   const context = new ContextStrategy(new Postgres(connection, model));
 
-  const createdObject = await context.create(sampleObject);
+  // const createdObject = await context.create(sampleObject);
+  const returnValues = await context.read();
 
-  console.log(createdObject);
+  console.log(returnValues);
   Postgres.disconnect(connection);
 };
 
