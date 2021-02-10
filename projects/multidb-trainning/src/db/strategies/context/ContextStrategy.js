@@ -1,3 +1,4 @@
+const ICrud = require('../interfaces/ICrud');
 class ContextStrategy extends ICrud {
   constructor(database) {
     super();
@@ -32,3 +33,5 @@ class ContextStrategy extends ICrud {
     return this._database.disconnect();
   }
 }
+
+module.exports = ContextStrategy;
