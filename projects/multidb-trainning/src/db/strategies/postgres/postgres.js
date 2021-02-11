@@ -26,7 +26,10 @@ class Postgres extends ICrud {
     return await this._schema.update(item, { where: { id: id } });
   }
 
-  delete(id) {}
+  async delete(id) {
+    const query = id ? { id } : {};
+    return await this._schema.destroy({ where: query });
+  }
 
   async isConnected() {
     try {

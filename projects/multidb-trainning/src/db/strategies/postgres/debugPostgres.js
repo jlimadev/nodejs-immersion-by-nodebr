@@ -11,15 +11,19 @@ const call = async () => {
 
   const context = new ContextStrategy(new Postgres(connection, model));
 
-  // const createdObject = await context.create(sampleObject);
+  /* const createdObject = await context.create(sampleObject);
+  
   const updatedObject = await context.update(
     '19cb7c30-da60-45e4-b6ea-0a1f889da84c',
     sampleObject,
   );
+  
+  const deletedObject = await context.delete(
+    '19cb7c30-da60-45e4-b6ea-0a1f889da84c',
+  ); */
 
   const returnValues = await context.read();
 
-  console.log(updatedObject);
   console.log(returnValues);
   Postgres.disconnect(connection);
 };
