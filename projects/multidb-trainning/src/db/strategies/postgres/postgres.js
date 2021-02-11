@@ -4,6 +4,9 @@ const Sequelize = require('sequelize');
 class Postgres extends ICrud {
   constructor(connection, schema) {
     super();
+    if (!connection || !schema)
+      throw new Error('You must inject the dependecies');
+
     this._connection = connection;
     this._schema = schema;
   }
@@ -50,7 +53,6 @@ class Postgres extends ICrud {
       logging: false,
     });
 
-    console.log('Connected');
     return connection;
   }
 
