@@ -5,11 +5,13 @@ const makeSut = () => {
   const Sut = Postgres;
   const connection = Sut.connect();
   const schema = 'heroes';
+  const mockInput = { name: 'any name', power: 'any power' };
+  const errorMessage = 'Any Error';
 
-  return { Sut, connection, schema };
+  return { Sut, connection, schema, mockInput, errorMessage };
 };
 
-describe('Constructor', () => {
+describe('Postgres Constructor', () => {
   it('Should throw a new error if connection is not informed', async () => {
     // Arrange
     const { Sut, schema } = makeSut();
@@ -47,5 +49,39 @@ describe('Constructor', () => {
     // Assert
     expect(postgres).toBeInstanceOf(Object);
     expect(keys).toEqual(['_connection', '_schema']);
+  });
+});
+
+describe('Postgres Methods', () => {
+  describe('create', () => {
+    it('Should return an error if create rejects', async () => {
+      // Arrange
+      const { Sut, connection, schema, errorMessage } = makeSut();
+      const postgres = new Sut(connection, schema);
+
+      postgres.create = jest.fn(() => Promise.reject(new Error(errorMessage)));
+
+      // Act
+      const act = async () => {
+        await postgres.create({});
+      };
+
+      // Assert
+      await expect(act).rejects.toThrow(errorMessage);
+    });
+
+    it('Should return an object with the inserted data', async () => {
+      // Arrange
+      const { Sut, connection, schema, mockInput } = makeSut();
+      const postgres = new Sut(connection, schema);
+      const mockedReturnValue = { id: 1, ...mockInput };
+      postgres.create = jest.fn().mockReturnValue(mockedReturnValue);
+
+      // Act
+      const result = await postgres.create(mockInput);
+
+      // Assert
+      expect(result).toStrictEqual(mockedReturnValue);
+    });
   });
 });
