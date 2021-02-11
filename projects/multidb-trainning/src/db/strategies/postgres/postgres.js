@@ -22,7 +22,10 @@ class Postgres extends ICrud {
     });
   }
 
-  update(id, item) {}
+  async update(id, item) {
+    return await this._schema.update(item, { where: { id: id } });
+  }
+
   delete(id) {}
 
   async isConnected() {
