@@ -6,9 +6,17 @@ const makeSut = () => {
   const connection = Sut.connect();
   const schema = 'heroes';
   const mockInput = { name: 'any name', power: 'any power' };
+  const mockedReturnValue = { id: 1, ...mockInput };
   const errorMessage = 'Any Error';
 
-  return { Sut, connection, schema, mockInput, errorMessage };
+  return {
+    Sut,
+    connection,
+    schema,
+    mockInput,
+    mockedReturnValue,
+    errorMessage,
+  };
 };
 
 describe('Postgres Constructor', () => {
@@ -72,15 +80,45 @@ describe('Postgres Methods', () => {
 
     it('Should return an object with the inserted data', async () => {
       // Arrange
-      const { Sut, connection, schema, mockInput } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        mockInput,
+        mockedReturnValue,
+      } = makeSut();
       const postgres = new Sut(connection, schema);
-      const mockedReturnValue = { id: 1, ...mockInput };
       postgres.create = jest.fn().mockReturnValue(mockedReturnValue);
 
       // Act
       const result = await postgres.create(mockInput);
 
       // Assert
+      expect(result).toStrictEqual(mockedReturnValue);
+    });
+  });
+
+  describe('read', () => {
+    it('Should return an error if read rejects', async () => {
+      const { Sut, connection, schema, errorMessage } = makeSut();
+      const postgres = new Sut(connection, schema);
+
+      postgres.read = jest.fn(() => Promise.reject(new Error(errorMessage)));
+
+      const act = async () => {
+        await postgres.read({ item: 'any' });
+      };
+
+      await expect(act).rejects.toThrow(errorMessage);
+    });
+
+    it('Should return the values when read correctly', async () => {
+      const { Sut, connection, schema, mockedReturnValue } = makeSut();
+      const postgres = new Sut(connection, schema);
+
+      postgres.read = jest.fn().mockReturnValue(mockedReturnValue);
+
+      const result = await postgres.read({ id: 1 });
       expect(result).toStrictEqual(mockedReturnValue);
     });
   });
