@@ -22,12 +22,17 @@ class Postgres extends ICrud {
   }
 
   async read(item, skip = 0, limit = 10) {
-    return await this._schema.findAll({
-      where: item,
-      offset: skip,
-      limit: limit,
-      raw: true,
-    });
+    try {
+      return await this._schema.findAll({
+        where: item,
+        offset: skip,
+        limit: limit,
+        raw: true,
+      });
+    } catch (error) {
+      console.error('Error', error);
+      throw Error(error);
+    }
   }
 
   async update(id, item) {
