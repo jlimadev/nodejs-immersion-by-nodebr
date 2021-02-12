@@ -1,5 +1,6 @@
 const ICrud = require('../interfaces/ICrud');
 const Sequelize = require('sequelize');
+const isUUID = require('../../../utils/validateUUID');
 
 class Postgres extends ICrud {
   constructor(connection, schema) {
@@ -36,6 +37,14 @@ class Postgres extends ICrud {
   }
 
   async update(id, item) {
+    if (!id || !item) {
+      throw new Error('You must inform the id and the item');
+    }
+
+    if (!isUUID(id)) {
+      throw new Error('This id is not an UUID');
+    }
+
     try {
       return await this._schema.update(item, { where: { id: id } });
     } catch (error) {
