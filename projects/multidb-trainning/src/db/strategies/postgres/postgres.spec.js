@@ -6,6 +6,7 @@ const makeSut = () => {
   const connection = Sut.connect();
   const schema = 'heroes';
   const mockInput = { name: 'any name', power: 'any power' };
+  const mockUpdate = { name: 'any other name', power: 'any other power' };
   const mockedReturnValue = { id: 1, ...mockInput };
   const errorMessage = 'Any Error';
 
@@ -14,6 +15,7 @@ const makeSut = () => {
     connection,
     schema,
     mockInput,
+    mockUpdate,
     mockedReturnValue,
     errorMessage,
   };
@@ -112,7 +114,7 @@ describe('Postgres Methods', () => {
       await expect(act).rejects.toThrow(errorMessage);
     });
 
-    it('Should return the values when read correctly', async () => {
+    it('Should return the values when read successfuly', async () => {
       const { Sut, connection, schema, mockedReturnValue } = makeSut();
       const postgres = new Sut(connection, schema);
 
@@ -120,6 +122,57 @@ describe('Postgres Methods', () => {
 
       const result = await postgres.read({ id: 1 });
       expect(result).toStrictEqual(mockedReturnValue);
+    });
+  });
+
+  describe('update', () => {
+    it('Should return an error if update rejects', async () => {
+      const { Sut, connection, schema, errorMessage } = makeSut();
+      const postgres = new Sut(connection, schema);
+
+      postgres.update = jest.fn(() => Promise.reject(new Error(errorMessage)));
+
+      const act = async () => {
+        await postgres.update({});
+      };
+
+      await expect(act).rejects.toThrow(errorMessage);
+    });
+
+    it('Should return [ 1 ] if updated successfuly', async () => {
+      const {
+        Sut,
+        connection,
+        schema,
+        mockedReturnValue,
+        mockUpdate,
+      } = makeSut();
+      const postgres = new Sut(connection, schema);
+      const expectedResponse = '[ 1 ]';
+      const expectedUpdatedResponse = { ...mockedReturnValue, ...mockUpdate };
+
+      postgres.update = jest.fn().mockReturnValue('[ 1 ]');
+      postgres.read = jest
+        .fn()
+        .mockReturnValue({ ...mockedReturnValue, ...mockUpdate });
+
+      const result = await postgres.update(mockedReturnValue.id, mockUpdate);
+      const readUpdatedValue = await postgres.read(mockedReturnValue.id);
+
+      expect(result).toStrictEqual(expectedResponse);
+      expect(readUpdatedValue).toStrictEqual(expectedUpdatedResponse);
+    });
+
+    it('Should return [ 0 ] if try to update an non existing Id', async () => {
+      const { Sut, connection, schema, mockUpdate } = makeSut();
+      const postgres = new Sut(connection, schema);
+      const expectedResponse = '[ 0 ]';
+
+      postgres.update = jest.fn().mockReturnValue('[ 0 ]');
+
+      const result = await postgres.update('invalidId', mockUpdate);
+
+      expect(result).toStrictEqual(expectedResponse);
     });
   });
 });
