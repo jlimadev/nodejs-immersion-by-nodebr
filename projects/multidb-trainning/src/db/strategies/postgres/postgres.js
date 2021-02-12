@@ -36,7 +36,12 @@ class Postgres extends ICrud {
   }
 
   async update(id, item) {
-    return await this._schema.update(item, { where: { id: id } });
+    try {
+      return await this._schema.update(item, { where: { id: id } });
+    } catch (error) {
+      console.error('Error', error);
+      throw Error(error);
+    }
   }
 
   async delete(id) {
