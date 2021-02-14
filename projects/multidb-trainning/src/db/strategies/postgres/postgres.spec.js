@@ -1,49 +1,56 @@
 const Postgres = require('./postgres');
 const HeroesSchema = require('./schemas/heroesSchema');
+const Sequelize = require('sequelize');
 
-const MS = () => {
-  const definedTable = {
-    sync: jest.fn(() => console.log('HERE')),
+jest.mock('sequelize');
+
+const sequelizeMock = () => {
+  const defineModelMockedFunctions = {
+    sync: jest.fn(),
     create: jest.fn(),
     read: jest.fn(),
     update: jest.fn(),
     destroy: jest.fn(),
   };
 
-  const mockedSequelize = {
+  const sequelizeMockedFunctions = {
     authenticate: jest.fn(),
     close: jest.fn(),
-    define: jest.fn(() => definedTable),
+    define: jest.fn().mockReturnValue(defineModelMockedFunctions),
   };
 
-  const actualSequelize = jest.requireActual('sequelize');
+  Sequelize.mockImplementation(() => sequelizeMockedFunctions);
+
   return {
-    Sequelize: jest.fn(() => mockedSequelize),
-    mockedSequelize,
-    DataTypes: actualSequelize.DataTypes,
+    Sequelize,
+    sequelizeMockedFunctions,
+    defineModelMockedFunctions,
   };
 };
-const { mockedSequelize } = MS();
-
-const Sequelize = jest.fn().mockImplementation(() => {
-  return mockedSequelize;
-});
 
 // Factory SUT = System Under Test
-const makeSut = () => {
+const makeSut = async () => {
+  const {
+    sequelizeMockedFunctions,
+    defineModelMockedFunctions,
+  } = sequelizeMock();
   const Sut = Postgres;
+
   const connection = Sut.connect();
-  const schema = 'heroes';
+  const schema = await Sut.defineModel(connection, HeroesSchema);
+
   const mockUUID = '19cb7c30-da60-45e4-b6ea-0a1f889da84c';
   const mockInput = { name: 'any name', power: 'any power' };
   const mockUpdate = { name: 'any other name', power: 'any other power' };
-  const mockedReturnValue = { id: 1, ...mockInput };
+  const mockedReturnValue = { id: mockUUID, ...mockInput };
   const errorMessage = 'Any Error';
 
   return {
     Sut,
     connection,
     schema,
+    sequelizeMockedFunctions,
+    defineModelMockedFunctions,
     mockUUID,
     mockInput,
     mockUpdate,
@@ -52,18 +59,9 @@ const makeSut = () => {
   };
 };
 
-describe('Sequelize', () => {
-  it.only('Should setup', async () => {
-    const { Sut, schema, mockedSequelize } = makeSut();
-    const connection = Sut.connect();
-    const model = await Sut.defineModel(connection, HeroesSchema);
-    console.log(model);
-  });
-});
-
 describe('Postgres exports', () => {
-  it('Should be instance of object', () => {
-    const { Sut, connection, schema } = makeSut();
+  it('Should be instance of object', async () => {
+    const { Sut, connection, schema } = await makeSut();
     const postgres = new Sut(connection, schema);
 
     expect(postgres).toBeInstanceOf(Object);
@@ -81,11 +79,11 @@ describe('Postgres exports', () => {
 describe('Postgres Constructor', () => {
   it('Should throw a new error if connection is not informed', async () => {
     // Arrange
-    const { Sut, schema } = makeSut();
+    const { Sut, schema } = await makeSut();
 
     // Act
     const act = () => {
-      new Sut('', schema);
+      new Sut(undefined, schema);
     };
 
     // Assert
@@ -94,11 +92,11 @@ describe('Postgres Constructor', () => {
 
   it('Should throw a new error if the schema is not informed', async () => {
     // Arrange
-    const { Sut, connection } = makeSut();
+    const { Sut, connection } = await makeSut();
 
     // Act
     const act = () => {
-      new Sut(connection, '');
+      new Sut(connection, undefined);
     };
 
     // Assert
@@ -107,7 +105,7 @@ describe('Postgres Constructor', () => {
 
   it('Should return an object that contains the connection infos', async () => {
     // Arrange
-    const { Sut, connection, schema } = makeSut();
+    const { Sut, connection, schema } = await makeSut();
 
     // Act
     const postgres = new Sut(connection, schema);
@@ -123,10 +121,17 @@ describe('Postgres Methods', () => {
   describe('create', () => {
     it('Should return an error if create rejects', async () => {
       // Arrange
-      const { Sut, connection, schema, errorMessage } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        errorMessage,
+        defineModelMockedFunctions,
+      } = await makeSut();
+
       const postgres = new Sut(connection, schema);
 
-      postgres.create = jest.fn(async () =>
+      defineModelMockedFunctions.create = jest.fn(async () =>
         Promise.reject(new Error(errorMessage)),
       );
 
@@ -136,7 +141,7 @@ describe('Postgres Methods', () => {
       };
 
       // Assert
-      await expect(act()).rejects.toThrow(errorMessage);
+      await expect(act()).rejects.toThrow('Error creating data on postgres');
     });
 
     it('Should return an object with the inserted data', async () => {
@@ -147,15 +152,21 @@ describe('Postgres Methods', () => {
         schema,
         mockInput,
         mockedReturnValue,
-      } = makeSut();
+        defineModelMockedFunctions,
+      } = await makeSut();
+
       const postgres = new Sut(connection, schema);
-      postgres.create = jest.fn().mockReturnValue(mockedReturnValue);
+
+      defineModelMockedFunctions.create = jest
+        .fn()
+        .mockReturnValue({ dataValues: mockedReturnValue });
 
       // Act
-      const result = await postgres.create(mockInput);
+      const dataValues = await postgres.create(mockInput);
 
       // Assert
-      expect(result).toStrictEqual(mockedReturnValue);
+      expect(defineModelMockedFunctions.create).toHaveBeenCalled();
+      expect(dataValues).toStrictEqual(mockedReturnValue);
     });
   });
 
