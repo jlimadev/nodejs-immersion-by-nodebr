@@ -54,8 +54,21 @@ class Postgres extends ICrud {
   }
 
   async delete(id) {
-    const query = id ? { id } : {};
-    return await this._schema.destroy({ where: query });
+    if (!id) {
+      throw new Error('You must inform the id');
+    }
+
+    if (!isUUID(id)) {
+      throw new Error('This id is not an UUID');
+    }
+
+    try {
+      const query = id ? { id } : {};
+      return await this._schema.destroy({ where: query });
+    } catch (error) {
+      console.error('Error', error);
+      throw Error(error);
+    }
   }
 
   async isConnected() {
