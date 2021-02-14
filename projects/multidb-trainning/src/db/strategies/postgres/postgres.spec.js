@@ -8,7 +8,7 @@ const sequelizeMock = () => {
   const defineModelMockedFunctions = {
     sync: jest.fn(),
     create: jest.fn(),
-    read: jest.fn(),
+    findAll: jest.fn(),
     update: jest.fn(),
     destroy: jest.fn(),
   };
@@ -162,10 +162,10 @@ describe('Postgres Methods', () => {
       };
 
       // Assert
-      expect(defineModelMockedFunctions.create).not.toHaveBeenCalled();
       await expect(act()).rejects.toThrow(
         'You must send the body to create the item',
       );
+      expect(defineModelMockedFunctions.create).not.toHaveBeenCalled();
     });
 
     it('Should return an object with the inserted data', async () => {
@@ -189,33 +189,90 @@ describe('Postgres Methods', () => {
       const dataValues = await postgres.create(mockInput);
 
       // Assert
-      expect(defineModelMockedFunctions.create).toHaveBeenCalled();
       expect(dataValues).toStrictEqual(mockedReturnValue);
+      expect(defineModelMockedFunctions.create).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.create).toHaveBeenCalledWith(mockInput);
     });
   });
 
   describe('read', () => {
     it('Should return an error if read rejects', async () => {
-      const { Sut, connection, schema, errorMessage } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        errorMessage,
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
 
-      postgres.read = jest.fn(() => Promise.reject(new Error(errorMessage)));
+      defineModelMockedFunctions.findAll = jest.fn(() =>
+        Promise.reject(new Error(errorMessage)),
+      );
 
       const act = async () => {
-        await postgres.read({ item: 'any' });
+        await postgres.read();
       };
 
-      await expect(act).rejects.toThrow(errorMessage);
+      await expect(act).rejects.toThrow('Error on reading data from postgres');
+      expect(defineModelMockedFunctions.findAll).toHaveBeenCalled();
     });
 
-    it('Should return the values when read successfuly', async () => {
-      const { Sut, connection, schema, mockedReturnValue } = makeSut();
+    it('Should return an array with the result(s) of reading', async () => {
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUUID,
+        mockedReturnValue,
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
+      const searchItem = { id: mockUUID };
 
-      postgres.read = jest.fn().mockReturnValue(mockedReturnValue);
+      defineModelMockedFunctions.findAll = jest
+        .fn()
+        .mockReturnValue([mockedReturnValue]);
 
-      const result = await postgres.read({ id: 1 });
-      expect(result).toStrictEqual(mockedReturnValue);
+      const result = await postgres.read(searchItem);
+
+      expect(result).toStrictEqual([mockedReturnValue]);
+      expect(Array.isArray(result)).toBe(true);
+
+      expect(defineModelMockedFunctions.findAll).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.findAll).toHaveBeenCalledWith({
+        where: searchItem,
+        offset: 0,
+        limit: 10,
+        raw: true,
+      });
+    });
+
+    it('Should return an empty array if nothing is found', async () => {
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUUID,
+        defineModelMockedFunctions,
+      } = await makeSut();
+      const postgres = new Sut(connection, schema);
+      const searchItem = { id: mockUUID };
+
+      defineModelMockedFunctions.findAll = jest.fn().mockReturnValue([]);
+
+      const result = await postgres.read(searchItem);
+
+      expect(result).toStrictEqual([]);
+      expect(Array.isArray(result)).toBe(true);
+
+      expect(defineModelMockedFunctions.findAll).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.findAll).toHaveBeenCalledWith({
+        where: searchItem,
+        offset: 0,
+        limit: 10,
+        raw: true,
+      });
     });
   });
 

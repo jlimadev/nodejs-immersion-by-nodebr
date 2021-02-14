@@ -36,8 +36,8 @@ class Postgres extends ICrud {
         raw: true,
       });
     } catch (error) {
-      console.error('Error', error);
-      throw Error(error);
+      const errorMessage = 'Error on reading data from postgres';
+      throw Error(errorMessage);
     }
   }
 
