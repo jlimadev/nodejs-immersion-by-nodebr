@@ -278,55 +278,82 @@ describe('Postgres Methods', () => {
 
   describe('update', () => {
     it('Should return an error if update rejects', async () => {
-      const { Sut, connection, schema, errorMessage } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        errorMessage,
+        defineModelMockedFunctions,
+        mockUUID,
+        mockUpdate,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
 
-      postgres.update = jest.fn(() => Promise.reject(new Error(errorMessage)));
+      defineModelMockedFunctions.update = jest.fn(() =>
+        Promise.reject(new Error(errorMessage)),
+      );
 
       const act = async () => {
-        await postgres.update({});
+        await postgres.update(mockUUID, mockUpdate);
       };
 
-      await expect(act).rejects.toThrow(errorMessage);
+      await expect(act).rejects.toThrow('Error on update data on postgres');
+      expect(defineModelMockedFunctions.update).toHaveBeenCalled();
     });
 
     it('Should return an error if is not an UUID', async () => {
-      const { Sut, connection, schema, mockUpdate, errorMessage } = makeSut();
-      const postgres = new Sut(connection, schema);
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUpdate,
+        defineModelMockedFunctions,
+      } = await makeSut();
 
-      postgres.update = jest.fn(() => Promise.reject(new Error(errorMessage)));
+      const postgres = new Sut(connection, schema);
 
       const act = async () => {
         await postgres.update('InvalidUUID', mockUpdate);
       };
 
-      await expect(act).rejects.toThrow(errorMessage);
+      await expect(act).rejects.toThrow('This id is not an UUID');
+      expect(defineModelMockedFunctions.update).not.toHaveBeenCalled();
     });
 
     it('Should return an error if id is missing', async () => {
-      const { Sut, connection, schema, mockUpdate, errorMessage } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUpdate,
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
-
-      postgres.update = jest.fn(() => Promise.reject(new Error(errorMessage)));
 
       const act = async () => {
         await postgres.update(undefined, mockUpdate);
       };
 
-      await expect(act).rejects.toThrow(errorMessage);
+      await expect(act).rejects.toThrow('You must inform the id and the item');
+      expect(defineModelMockedFunctions.update).not.toHaveBeenCalled();
     });
 
     it('Should return an error if body is missing', async () => {
-      const { Sut, connection, schema, errorMessage } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUUID,
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
 
-      postgres.update = jest.fn(() => Promise.reject(new Error(errorMessage)));
-
       const act = async () => {
-        await postgres.update('validUUID', undefined);
+        await postgres.update(mockUUID, undefined);
       };
 
-      await expect(act).rejects.toThrow(errorMessage);
+      await expect(act).rejects.toThrow('You must inform the id and the item');
+      expect(defineModelMockedFunctions.update).not.toHaveBeenCalled();
     });
 
     it('Should return [ 1 ] if updated successfuly', async () => {
@@ -334,35 +361,56 @@ describe('Postgres Methods', () => {
         Sut,
         connection,
         schema,
-        mockedReturnValue,
+        mockUUID,
         mockUpdate,
-      } = makeSut();
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
-      const expectedResponse = '[ 1 ]';
-      const expectedUpdatedResponse = { ...mockedReturnValue, ...mockUpdate };
+      const expectedUpdatedResponse = [{ id: mockUUID, ...mockUpdate }];
 
-      postgres.update = jest.fn().mockReturnValue('[ 1 ]');
-      postgres.read = jest
+      defineModelMockedFunctions.update = jest.fn().mockReturnValue('[ 1 ]');
+      defineModelMockedFunctions.findAll = jest
         .fn()
-        .mockReturnValue({ ...mockedReturnValue, ...mockUpdate });
+        .mockReturnValue(expectedUpdatedResponse);
 
-      const result = await postgres.update(mockedReturnValue.id, mockUpdate);
-      const readUpdatedValue = await postgres.read(mockedReturnValue.id);
+      const result = await postgres.update(mockUUID, mockUpdate);
+      const readUpdatedValue = await postgres.read(mockUUID);
 
-      expect(result).toStrictEqual(expectedResponse);
+      expect(result).toStrictEqual('[ 1 ]');
+
       expect(readUpdatedValue).toStrictEqual(expectedUpdatedResponse);
+      expect(Array.isArray(readUpdatedValue)).toBe(true);
+
+      expect(defineModelMockedFunctions.update).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.update).toHaveBeenCalledWith(
+        mockUpdate,
+        { where: { id: mockUUID } },
+      );
+      expect(defineModelMockedFunctions.findAll).toHaveBeenCalled();
     });
 
     it('Should return [ 0 ] if try to update an non existing Id', async () => {
-      const { Sut, connection, schema, mockUpdate } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUUID,
+        mockUpdate,
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
-      const expectedResponse = '[ 0 ]';
 
-      postgres.update = jest.fn().mockReturnValue('[ 0 ]');
+      defineModelMockedFunctions.update = jest.fn().mockReturnValue('[ 0 ]');
 
-      const result = await postgres.update('nonExistingId', mockUpdate);
+      const result = await postgres.update(mockUUID, mockUpdate);
 
-      expect(result).toStrictEqual(expectedResponse);
+      expect(result).toStrictEqual('[ 0 ]');
+
+      expect(defineModelMockedFunctions.update).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.update).toHaveBeenCalledWith(
+        mockUpdate,
+        { where: { id: mockUUID } },
+      );
     });
   });
 

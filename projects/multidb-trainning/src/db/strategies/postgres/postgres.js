@@ -21,7 +21,6 @@ class Postgres extends ICrud {
       const { dataValues } = await this._schema.create(item);
       return dataValues;
     } catch (error) {
-      // console.log('Ops!', error);
       const errorMessage = 'Error creating data on postgres';
       throw Error(errorMessage);
     }
@@ -53,8 +52,8 @@ class Postgres extends ICrud {
     try {
       return await this._schema.update(item, { where: { id: id } });
     } catch (error) {
-      console.error('Error', error);
-      throw Error(error);
+      const errorMessage = 'Error on update data on postgres';
+      throw Error(errorMessage);
     }
   }
 
