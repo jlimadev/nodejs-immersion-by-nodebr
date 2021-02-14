@@ -58,11 +58,7 @@ class Postgres extends ICrud {
   }
 
   async delete(id) {
-    if (!id) {
-      throw new Error('You must inform the id');
-    }
-
-    if (!isUUID(id)) {
+    if (id && !isUUID(id)) {
       throw new Error('This id is not an UUID');
     }
 
@@ -70,8 +66,8 @@ class Postgres extends ICrud {
       const query = id ? { id } : {};
       return await this._schema.destroy({ where: query });
     } catch (error) {
-      console.error('Error', error);
-      throw Error(error);
+      const errorMessage = 'Error on delete data on postgres';
+      throw Error(errorMessage);
     }
   }
 
@@ -80,8 +76,8 @@ class Postgres extends ICrud {
       await this._connection.authenticate();
       return true;
     } catch (error) {
-      console.error(error);
-      return false;
+      const errorMessage = 'Error to authenticate on postgres';
+      throw Error(errorMessage);
     }
   }
 
@@ -97,8 +93,14 @@ class Postgres extends ICrud {
   }
 
   static disconnect(connection) {
-    console.log('Disconnected');
-    connection.close();
+    try {
+      connection.close();
+      console.log('Disconnected');
+      return true;
+    } catch (error) {
+      const errorMessage = 'Error on close connection with postgres';
+      throw Error(errorMessage);
+    }
   }
 
   static async defineModel(connection, schema) {

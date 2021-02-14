@@ -3,7 +3,6 @@ const HeroesSchema = require('./schemas/heroesSchema');
 const Sequelize = require('sequelize');
 
 jest.mock('sequelize');
-
 const sequelizeMock = () => {
   const defineModelMockedFunctions = {
     sync: jest.fn(),
@@ -110,6 +109,7 @@ describe('Postgres Constructor', () => {
     // Act
     const postgres = new Sut(connection, schema);
     const keys = Object.keys(postgres);
+    console.log(postgres);
 
     // Assert
     expect(postgres).toBeInstanceOf(Object);
@@ -416,64 +416,167 @@ describe('Postgres Methods', () => {
 
   describe('delete', () => {
     it('Should return an error if delete fails or rejects', async () => {
-      const { Sut, connection, schema, mockUUID, errorMessage } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUUID,
+        errorMessage,
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
 
-      postgres.delete = jest.fn(() => Promise.reject(new Error(errorMessage)));
+      defineModelMockedFunctions.destroy = jest.fn(() =>
+        Promise.reject(new Error(errorMessage)),
+      );
 
       const act = async () => {
         await postgres.delete(mockUUID);
       };
 
-      await expect(act).rejects.toThrow(errorMessage);
+      await expect(act).rejects.toThrow('Error on delete data on postgres');
+      expect(defineModelMockedFunctions.destroy).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.destroy).toHaveBeenCalledWith({
+        where: { id: mockUUID },
+      });
     });
 
     it('Should return an error if is not an UUID', async () => {
-      const { Sut, connection, schema, errorMessage } = makeSut();
+      const { Sut, connection, schema } = await makeSut();
       const postgres = new Sut(connection, schema);
-
-      postgres.delete = jest.fn(() => Promise.reject(new Error(errorMessage)));
 
       const act = async () => {
         await postgres.delete('InvalidUUID');
       };
 
-      await expect(act).rejects.toThrow(errorMessage);
+      await expect(act).rejects.toThrow('This id is not an UUID');
     });
 
-    it('Should return an error if id is missing', async () => {
-      const { Sut, connection, schema, errorMessage } = makeSut();
+    it('Should return 1 if deleted successfuly (when send id)', async () => {
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUUID,
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
 
-      postgres.delete = jest.fn(() => Promise.reject(new Error(errorMessage)));
-
-      const act = async () => {
-        await postgres.delete(undefined);
-      };
-
-      await expect(act).rejects.toThrow(errorMessage);
-    });
-
-    it('Should return 1 if deleted successfuly', async () => {
-      const { Sut, connection, schema, mockUUID } = makeSut();
-      const postgres = new Sut(connection, schema);
-
-      postgres.delete = jest.fn().mockReturnValue(1);
+      defineModelMockedFunctions.destroy = jest.fn().mockReturnValue(1);
 
       const result = await postgres.delete(mockUUID);
 
       expect(result).toStrictEqual(1);
+      expect(defineModelMockedFunctions.destroy).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.destroy).toHaveBeenCalledWith({
+        where: { id: mockUUID },
+      });
     });
 
     it('Should return 0 if nothing is deleted', async () => {
-      const { Sut, connection, schema, mockUUID } = makeSut();
+      const {
+        Sut,
+        connection,
+        schema,
+        mockUUID,
+        defineModelMockedFunctions,
+      } = await makeSut();
       const postgres = new Sut(connection, schema);
 
-      postgres.delete = jest.fn().mockReturnValue(0);
+      defineModelMockedFunctions.destroy = jest.fn().mockReturnValue(0);
 
       const result = await postgres.delete(mockUUID);
 
       expect(result).toStrictEqual(0);
+      expect(defineModelMockedFunctions.destroy).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.destroy).toHaveBeenCalledWith({
+        where: { id: mockUUID },
+      });
     });
+
+    it('Should delete everything if no id is sent', async () => {
+      const {
+        Sut,
+        connection,
+        schema,
+        defineModelMockedFunctions,
+      } = await makeSut();
+      const postgres = new Sut(connection, schema);
+
+      defineModelMockedFunctions.destroy = jest
+        .fn()
+        .mockReturnValue('anyDeleteCount');
+
+      const result = await postgres.delete();
+
+      expect(result).toStrictEqual('anyDeleteCount');
+      expect(defineModelMockedFunctions.destroy).toHaveBeenCalled();
+      expect(defineModelMockedFunctions.destroy).toHaveBeenCalledWith({
+        where: {},
+      });
+    });
+  });
+
+  describe('isConnected', () => {
+    it('should return an error if authenticate throws an error', async () => {
+      const {
+        Sut,
+        connection,
+        schema,
+        errorMessage,
+        sequelizeMockedFunctions,
+      } = await makeSut();
+      const postgres = new Sut(connection, schema);
+
+      sequelizeMockedFunctions.authenticate = jest.fn(() =>
+        Promise.reject(new Error(errorMessage)),
+      );
+
+      const act = async () => await postgres.isConnected();
+
+      expect(act).rejects.toThrow('Error to authenticate on postgres');
+      expect(sequelizeMockedFunctions.authenticate).toHaveBeenCalled();
+    });
+
+    it('should return true if authenticate', async () => {
+      const {
+        Sut,
+        connection,
+        schema,
+        errorMessage,
+        sequelizeMockedFunctions,
+      } = await makeSut();
+      const postgres = new Sut(connection, schema);
+
+      const result = await postgres.isConnected();
+
+      expect(result).toBe(true);
+      expect(sequelizeMockedFunctions.authenticate).toHaveBeenCalled();
+    });
+  });
+});
+
+describe('Satic Methods', () => {
+  jest.mock('./postgres');
+
+  it('Should throw an error if fails on close connection', async () => {
+    const {
+      Sut,
+      connection,
+      schema,
+      sequelizeMockedFunctions,
+      errorMessage,
+    } = await makeSut();
+    const postgres = new Sut(connection, schema);
+
+    sequelizeMockedFunctions.close = jest.fn(() =>
+      Promise.reject(new Error(errorMessage)),
+    );
+
+    const act = () => {
+      postgres.disconnect(connection);
+    };
+
+    expect(act).rejects.toThrow('Error on close connection with postgres');
   });
 });

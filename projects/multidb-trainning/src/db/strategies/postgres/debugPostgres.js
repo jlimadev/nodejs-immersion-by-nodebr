@@ -25,10 +25,12 @@ const call = async () => {
     '19cb7c30-da60-45e4-b6ea-0a1f889da84c',
   );
  */
+
+  // const deleteAll = await context.delete();
   const returnValues = await context.read();
 
-  console.log(returnValues);
-  Postgres.disconnect(connection);
+  const d = await context.isConnected();
+  console.log(d);
 };
 
 call();
