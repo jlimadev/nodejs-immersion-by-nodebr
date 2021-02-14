@@ -1,4 +1,33 @@
 const Postgres = require('./postgres');
+const HeroesSchema = require('./schemas/heroesSchema');
+
+const MS = () => {
+  const definedTable = {
+    sync: jest.fn(() => console.log('HERE')),
+    create: jest.fn(),
+    read: jest.fn(),
+    update: jest.fn(),
+    destroy: jest.fn(),
+  };
+
+  const mockedSequelize = {
+    authenticate: jest.fn(),
+    close: jest.fn(),
+    define: jest.fn(() => definedTable),
+  };
+
+  const actualSequelize = jest.requireActual('sequelize');
+  return {
+    Sequelize: jest.fn(() => mockedSequelize),
+    mockedSequelize,
+    DataTypes: actualSequelize.DataTypes,
+  };
+};
+const { mockedSequelize } = MS();
+
+const Sequelize = jest.fn().mockImplementation(() => {
+  return mockedSequelize;
+});
 
 // Factory SUT = System Under Test
 const makeSut = () => {
@@ -22,6 +51,15 @@ const makeSut = () => {
     errorMessage,
   };
 };
+
+describe('Sequelize', () => {
+  it.only('Should setup', async () => {
+    const { Sut, schema, mockedSequelize } = makeSut();
+    const connection = Sut.connect();
+    const model = await Sut.defineModel(connection, HeroesSchema);
+    console.log(model);
+  });
+});
 
 describe('Postgres exports', () => {
   it('Should be instance of object', () => {
@@ -88,7 +126,9 @@ describe('Postgres Methods', () => {
       const { Sut, connection, schema, errorMessage } = makeSut();
       const postgres = new Sut(connection, schema);
 
-      postgres.create = jest.fn(() => Promise.reject(new Error(errorMessage)));
+      postgres.create = jest.fn(async () =>
+        Promise.reject(new Error(errorMessage)),
+      );
 
       // Act
       const act = async () => {
@@ -96,7 +136,7 @@ describe('Postgres Methods', () => {
       };
 
       // Assert
-      await expect(act).rejects.toThrow(errorMessage);
+      await expect(act()).rejects.toThrow(errorMessage);
     });
 
     it('Should return an object with the inserted data', async () => {

@@ -18,7 +18,8 @@ class Postgres extends ICrud {
       return dataValues;
     } catch (error) {
       console.error('Error', error);
-      throw Error(error);
+      const errorMessage = 'Error creating data on postgres';
+      throw Error(errorMessage);
     }
   }
 
@@ -89,7 +90,6 @@ class Postgres extends ICrud {
       operatorsAliases: 0,
       logging: false,
     });
-
     return connection;
   }
 
