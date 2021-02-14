@@ -13,11 +13,15 @@ class Postgres extends ICrud {
   }
 
   async create(item) {
+    if (!item) {
+      throw new Error('You must send the body to create the item');
+    }
+
     try {
       const { dataValues } = await this._schema.create(item);
       return dataValues;
     } catch (error) {
-      console.error('Error', error);
+      // console.log('Ops!', error);
       const errorMessage = 'Error creating data on postgres';
       throw Error(errorMessage);
     }

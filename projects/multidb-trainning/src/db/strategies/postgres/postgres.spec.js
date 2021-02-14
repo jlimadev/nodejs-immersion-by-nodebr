@@ -137,11 +137,35 @@ describe('Postgres Methods', () => {
 
       // Act
       const act = async () => {
-        await postgres.create({});
+        await postgres.create({ item: 'any' });
       };
 
       // Assert
       await expect(act()).rejects.toThrow('Error creating data on postgres');
+      expect(defineModelMockedFunctions.create).toHaveBeenCalled();
+    });
+
+    it('Should return an error if dont send the item', async () => {
+      // Arrange
+      const {
+        Sut,
+        connection,
+        schema,
+        defineModelMockedFunctions,
+      } = await makeSut();
+
+      const postgres = new Sut(connection, schema);
+
+      // Act
+      const act = async () => {
+        await postgres.create();
+      };
+
+      // Assert
+      expect(defineModelMockedFunctions.create).not.toHaveBeenCalled();
+      await expect(act()).rejects.toThrow(
+        'You must send the body to create the item',
+      );
     });
 
     it('Should return an object with the inserted data', async () => {
