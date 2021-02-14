@@ -139,6 +139,45 @@ describe('Postgres Methods', () => {
       await expect(act).rejects.toThrow(errorMessage);
     });
 
+    it('Should return an error if is not an UUID', async () => {
+      const { Sut, connection, schema, mockUpdate, errorMessage } = makeSut();
+      const postgres = new Sut(connection, schema);
+
+      postgres.update = jest.fn(() => Promise.reject(new Error(errorMessage)));
+
+      const act = async () => {
+        await postgres.update('InvalidUUID', mockUpdate);
+      };
+
+      await expect(act).rejects.toThrow(errorMessage);
+    });
+
+    it('Should return an error if id is missing', async () => {
+      const { Sut, connection, schema, mockUpdate, errorMessage } = makeSut();
+      const postgres = new Sut(connection, schema);
+
+      postgres.update = jest.fn(() => Promise.reject(new Error(errorMessage)));
+
+      const act = async () => {
+        await postgres.update(undefined, mockUpdate);
+      };
+
+      await expect(act).rejects.toThrow(errorMessage);
+    });
+
+    it('Should return an error if body is missing', async () => {
+      const { Sut, connection, schema, errorMessage } = makeSut();
+      const postgres = new Sut(connection, schema);
+
+      postgres.update = jest.fn(() => Promise.reject(new Error(errorMessage)));
+
+      const act = async () => {
+        await postgres.update('validUUID', undefined);
+      };
+
+      await expect(act).rejects.toThrow(errorMessage);
+    });
+
     it('Should return [ 1 ] if updated successfuly', async () => {
       const {
         Sut,
@@ -170,7 +209,7 @@ describe('Postgres Methods', () => {
 
       postgres.update = jest.fn().mockReturnValue('[ 0 ]');
 
-      const result = await postgres.update('invalidId', mockUpdate);
+      const result = await postgres.update('nonExistingId', mockUpdate);
 
       expect(result).toStrictEqual(expectedResponse);
     });

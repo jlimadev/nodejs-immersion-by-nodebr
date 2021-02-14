@@ -25,7 +25,7 @@ const call = async () => {
     '19cb7c30-da60-45e4-b6ea-0a1f889da84c',
   );
  */
-  const returnValues = await context.read({ name: 'Bomuto' });
+  const returnValues = await context.read({ power: 'Bomuto' });
 
   console.log(returnValues);
   Postgres.disconnect(connection);
