@@ -95,7 +95,6 @@ class Postgres extends ICrud {
   static disconnect(connection) {
     try {
       connection.close();
-      console.log('Disconnected');
       return true;
     } catch (error) {
       const errorMessage = 'Error on close connection with postgres';
