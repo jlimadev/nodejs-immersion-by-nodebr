@@ -672,9 +672,9 @@ describe('Postgres', () => {
           errorMessage,
         } = await makeSut();
 
-        sequelizeMockedFunctions.define = jest.fn(() =>
-          Promise.reject(new Error(errorMessage)),
-        );
+        sequelizeMockedFunctions.define = jest.fn(() => {
+          throw new Error(errorMessage);
+        });
 
         const act = async () => {
           await Sut.defineModel(connection, schema);
@@ -697,9 +697,9 @@ describe('Postgres', () => {
           errorMessage,
         } = await makeSut();
 
-        defineModelMockedFunctions.sync = jest.fn(() =>
-          Promise.reject(new Error(errorMessage)),
-        );
+        defineModelMockedFunctions.sync = jest.fn(() => {
+          throw new Error(errorMessage);
+        });
 
         const act = async () => {
           await Sut.defineModel(connection, schema);

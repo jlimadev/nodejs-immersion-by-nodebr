@@ -14,6 +14,7 @@ module.exports = {
     'src/**/*.js',
     '!**/jest.config.js',
     '!src/**/debug*.js',
+    '!src/**/mongodbCommands.js',
   ],
   coverageDirectory: './coverage',
   coverageReporters: ['lcov', 'text'],
