@@ -3,6 +3,7 @@ const HeroesSchema = require('./schemas/heroesSchema');
 const Sequelize = require('sequelize');
 
 jest.mock('sequelize');
+
 const sequelizeMock = () => {
   const defineModelMockedFunctions = {
     sync: jest.fn(),
@@ -57,6 +58,7 @@ const makeSut = async () => {
     errorMessage,
   };
 };
+
 describe('Postgres', () => {
   describe('Postgres exports', () => {
     it('Should be instance of object', async () => {
@@ -561,18 +563,33 @@ describe('Postgres', () => {
   });
 
   describe('Satic Methods', () => {
-    describe('disconnect', () => {
-      it('Should rerturn true on close connection successfuly', async () => {
-        const { Sut, connection, sequelizeMockedFunctions } = await makeSut();
+    describe('connect', () => {
+      it('should return an error if connect fails', async () => {
+        const { Sut, errorMessage } = await makeSut();
 
-        sequelizeMockedFunctions.close = jest.fn(() => true);
+        Sequelize.mockImplementationOnce(
+          jest.fn(() => {
+            throw new Error(errorMessage);
+          }),
+        );
 
-        const result = Sut.disconnect(connection);
+        const act = () => {
+          Sut.connect();
+        };
 
-        expect(result).toBe(true);
-        expect(sequelizeMockedFunctions.close).toHaveBeenCalled();
+        expect(act).toThrow('Error on connect with postgres');
       });
 
+      it('should connect successfuly and return the connection', async () => {
+        const { Sut, sequelizeMockedFunctions } = await makeSut();
+
+        const result = Sut.connect();
+
+        expect(result).toStrictEqual(sequelizeMockedFunctions);
+      });
+    });
+
+    describe('disconnect', () => {
       it('Should throw an error if fails on close connection', async () => {
         const {
           Sut,
@@ -602,6 +619,17 @@ describe('Postgres', () => {
 
         expect(act).toThrow('You must inform the connection to be closed');
         expect(sequelizeMockedFunctions.close).not.toHaveBeenCalled();
+      });
+
+      it('Should rerturn true on close connection successfuly', async () => {
+        const { Sut, connection, sequelizeMockedFunctions } = await makeSut();
+
+        sequelizeMockedFunctions.close = jest.fn(() => true);
+
+        const result = Sut.disconnect(connection);
+
+        expect(result).toBe(true);
+        expect(sequelizeMockedFunctions.close).toHaveBeenCalled();
       });
     });
 

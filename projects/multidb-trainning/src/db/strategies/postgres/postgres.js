@@ -82,14 +82,19 @@ class Postgres extends ICrud {
   }
 
   static connect() {
-    const connection = new Sequelize('heroes', 'root', 'root', {
-      host: 'localhost',
-      dialect: 'postgres',
-      quoteIdentifiers: false,
-      operatorsAliases: 0,
-      logging: false,
-    });
-    return connection;
+    try {
+      const connection = new Sequelize('heroes', 'root', 'root', {
+        host: 'localhost',
+        dialect: 'postgres',
+        quoteIdentifiers: false,
+        operatorsAliases: 0,
+        logging: false,
+      });
+      return connection;
+    } catch (error) {
+      const errorMessage = 'Error on connect with postgres';
+      throw Error(errorMessage);
+    }
   }
 
   static disconnect(connection) {
