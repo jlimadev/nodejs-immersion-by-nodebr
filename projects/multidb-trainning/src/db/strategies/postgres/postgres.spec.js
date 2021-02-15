@@ -590,6 +590,18 @@ describe('Postgres', () => {
         };
 
         expect(act).toThrow('Error on close connection with postgres');
+        expect(sequelizeMockedFunctions.close).toHaveBeenCalled();
+      });
+
+      it("Should throw an error if don't pass the connection", async () => {
+        const { Sut, sequelizeMockedFunctions } = await makeSut();
+
+        const act = () => {
+          Sut.disconnect();
+        };
+
+        expect(act).toThrow('You must inform the connection to be closed');
+        expect(sequelizeMockedFunctions.close).not.toHaveBeenCalled();
       });
     });
   });

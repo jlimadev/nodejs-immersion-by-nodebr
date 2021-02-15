@@ -93,6 +93,10 @@ class Postgres extends ICrud {
   }
 
   static disconnect(connection) {
+    if (!connection) {
+      throw new Error('You must inform the connection to be closed');
+    }
+
     try {
       connection.close();
       return true;
