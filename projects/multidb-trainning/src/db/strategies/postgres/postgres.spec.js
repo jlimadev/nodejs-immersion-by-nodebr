@@ -604,5 +604,110 @@ describe('Postgres', () => {
         expect(sequelizeMockedFunctions.close).not.toHaveBeenCalled();
       });
     });
+
+    describe('defineModel', () => {
+      it("should throw an error if don't pass the connection", async () => {
+        const { Sut, sequelizeMockedFunctions, schema } = await makeSut();
+
+        sequelizeMockedFunctions.define = jest.fn();
+        const act = async () => {
+          await Sut.defineModel(undefined, schema);
+        };
+
+        await expect(act).rejects.toThrow(
+          'You must inform the connection and schema',
+        );
+        expect(sequelizeMockedFunctions.define).not.toHaveBeenCalled();
+      });
+
+      it("should throw an error if don't pass the schema", async () => {
+        const { Sut, sequelizeMockedFunctions, connection } = await makeSut();
+
+        sequelizeMockedFunctions.define = jest.fn();
+        const act = async () => {
+          await Sut.defineModel(connection, undefined);
+        };
+
+        await expect(act).rejects.toThrow(
+          'You must inform the connection and schema',
+        );
+        expect(sequelizeMockedFunctions.define).not.toHaveBeenCalled();
+      });
+
+      it('should throw an error if define returns any error', async () => {
+        const {
+          Sut,
+          sequelizeMockedFunctions,
+          defineModelMockedFunctions,
+          connection,
+          schema,
+          errorMessage,
+        } = await makeSut();
+
+        sequelizeMockedFunctions.define = jest.fn(() =>
+          Promise.reject(new Error(errorMessage)),
+        );
+
+        const act = async () => {
+          await Sut.defineModel(connection, schema);
+        };
+
+        await expect(act).rejects.toThrow(
+          'Error on define model to postgres/sequelize',
+        );
+        expect(sequelizeMockedFunctions.define).toHaveBeenCalled();
+        expect(defineModelMockedFunctions.sync).toHaveBeenCalled();
+      });
+
+      it('should throw an error if sync returns any error', async () => {
+        const {
+          Sut,
+          sequelizeMockedFunctions,
+          defineModelMockedFunctions,
+          connection,
+          schema,
+          errorMessage,
+        } = await makeSut();
+
+        defineModelMockedFunctions.sync = jest.fn(() =>
+          Promise.reject(new Error(errorMessage)),
+        );
+
+        const act = async () => {
+          await Sut.defineModel(connection, schema);
+        };
+
+        await expect(act).rejects.toThrow(
+          'Error on define model to postgres/sequelize',
+        );
+        expect(sequelizeMockedFunctions.define).toHaveBeenCalled();
+        expect(defineModelMockedFunctions.sync).toHaveBeenCalled();
+      });
+
+      it('should return the model on success', async () => {
+        const {
+          Sut,
+          sequelizeMockedFunctions,
+          defineModelMockedFunctions,
+          connection,
+          schema,
+        } = await makeSut();
+
+        defineModelMockedFunctions.sync = jest
+          .fn()
+          .mockReturnValue(defineModelMockedFunctions);
+
+        const result = await Sut.defineModel(connection, schema);
+
+        expect(result).toStrictEqual(defineModelMockedFunctions);
+        expect(defineModelMockedFunctions.sync).toHaveBeenCalled();
+        expect(sequelizeMockedFunctions.define).toHaveBeenCalled();
+        expect(sequelizeMockedFunctions.define).toHaveBeenCalledWith(
+          schema.name,
+          schema.schema,
+          schema.options,
+        );
+      });
+    });
   });
 });

@@ -107,13 +107,22 @@ class Postgres extends ICrud {
   }
 
   static async defineModel(connection, schema) {
-    const heroesModel = connection.define(
-      schema.name,
-      schema.schema,
-      schema.options,
-    );
-    await heroesModel.sync();
-    return heroesModel;
+    if (!connection || !schema) {
+      throw new Error('You must inform the connection and schema');
+    }
+
+    try {
+      const heroesModel = connection.define(
+        schema.name,
+        schema.schema,
+        schema.options,
+      );
+      await heroesModel.sync();
+      return heroesModel;
+    } catch (error) {
+      const errorMessage = 'Error on define model to postgres/sequelize';
+      throw Error(errorMessage);
+    }
   }
 }
 
