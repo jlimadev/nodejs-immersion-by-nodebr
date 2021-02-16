@@ -3,9 +3,7 @@ module.exports = {
   transformIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/coverage/'],
   testMatch: ['<rootDir>/src/**/*.spec.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/coverage/'],
-
   watchPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/coverage/'],
-
   timers: 'fake',
   clearMocks: true,
   resetMocks: false,
@@ -26,4 +24,5 @@ module.exports = {
       statements: 80,
     },
   },
+  testEnvironment: 'node',
 };

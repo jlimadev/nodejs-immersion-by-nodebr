@@ -18,7 +18,7 @@ class MongoDB extends ICrud {
   // async delete(){};
   async isConnected() {}
 
-  static async connect() {
+  static connect() {
     const uri = 'mongodb://jlimadev:secretpass@localhost:27017/heroes';
 
     const options = {
@@ -34,6 +34,8 @@ class MongoDB extends ICrud {
       console.log('Database is running');
       return true;
     });
+
+    return connection;
   }
 
   static async disconnect() {
