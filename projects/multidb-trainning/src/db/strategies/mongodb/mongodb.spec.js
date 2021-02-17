@@ -1,5 +1,4 @@
 const MongoDb = require('./mongodb');
-const heroesSchema = require('./schemas/heroesSchema');
 const Mongoose = require('mongoose');
 
 jest.mock('mongoose');
@@ -21,13 +20,18 @@ const mongooseMock = () => {
   const mongooseMockedFn = {
     connect: jest.fn(),
     disconnect: jest.fn(),
+    Schema: class schema {},
     connection: jest.fn().mockReturnValue(connectionMockedFn),
     models: jest.fn().mockReturnValue(modelsMockedFn),
     model: jest.fn().mockReturnValue(modelsMockedFn),
   };
 
-  Mongoose.mockImplementation(() => connect);
-  Mongoose.connection.once.mockImplementation(() => true);
+  Mongoose.connection = jest.fn(() => connectionMockedFn);
+  // Mongoose.connect = jest.fn(() => true);
+  // Mongoose.Model.mockImplementation(() => modelsMockedFn);
+  // Mongoose.models = jest.fn(() => true);
+  // Mongoose.model = jest.fn(() => true);
+  // Mongoose.Schema.mockImplementation(() => modelsMockedFn);
 
   return { Mongoose, mongooseMockedFn, modelsMockedFn, connectionMockedFn };
 };
@@ -41,9 +45,8 @@ const makeSut = () => {
 
   const Sut = MongoDb;
   const connection = MongoDb.connect();
-  const schema = heroesSchema;
+  const schema = 'Model { heroes }';
 
-  console.log(connection.model);
   return {
     Sut,
     connection,

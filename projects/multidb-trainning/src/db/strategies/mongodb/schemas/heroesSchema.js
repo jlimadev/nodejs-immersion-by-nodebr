@@ -10,6 +10,10 @@ const heroesSchema = new Mongoose.Schema({
   createdAt: { type: Date, default: new Date() },
 });
 
-module.exports = Mongoose.models[modelName]
+const returnValue = Mongoose.models[modelName]
   ? Mongoose.model(modelName)
   : Mongoose.model(modelName, heroesSchema);
+
+console.log('Mongoose.Schema', returnValue);
+
+module.exports = returnValue;

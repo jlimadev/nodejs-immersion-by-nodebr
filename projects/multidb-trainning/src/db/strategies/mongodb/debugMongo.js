@@ -3,7 +3,8 @@ const heroesSchema = require('./schemas/heroesSchema');
 const ContextStrategy = require('../context/ContextStrategy');
 
 const call = async () => {
-  MongoDB.connect();
+  const connection = MongoDB.connect();
+  const mongodb = new ContextStrategy(new MongoDB(connection, heroesSchema));
   MongoDB.disconnect();
 };
 
