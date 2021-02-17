@@ -19,16 +19,21 @@ class MongoDB extends ICrud {
   async isConnected() {}
 
   static connect() {
-    const uri = 'mongodb://jlimadev:secretpass@localhost:27017/heroes';
+    try {
+      const uri = 'mongodb://jlimadev:secretpass@localhost:27017/heroes';
 
-    const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    };
+      const options = {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      };
 
-    Mongoose.connect(uri, options);
-    const connection = Mongoose.connection;
-    return connection;
+      Mongoose.connect(uri, options);
+      const connection = Mongoose.connection;
+      return connection;
+    } catch (error) {
+      const errorMessage = 'Error on connect with MongoDB';
+      throw Error(errorMessage);
+    }
   }
 
   static async disconnect() {
