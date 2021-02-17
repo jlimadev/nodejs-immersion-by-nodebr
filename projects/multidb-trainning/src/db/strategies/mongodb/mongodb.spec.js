@@ -1,5 +1,6 @@
 const MongoDb = require('./mongodb');
 const Mongoose = require('mongoose');
+// const HeroesSchema = require('./schemas/heroesSchema');
 
 jest.mock('mongoose');
 
@@ -27,11 +28,12 @@ const mongooseMock = () => {
   };
 
   Mongoose.connection = jest.fn(() => connectionMockedFn);
+  // Mongoose.Schema.mockImplementation(() => modelsMockedFn);
+  // Mongoose.Model.mockImplementation(() => modelsMockedFn);
   // Mongoose.connect = jest.fn(() => true);
   // Mongoose.Model.mockImplementation(() => modelsMockedFn);
   // Mongoose.models = jest.fn(() => true);
   // Mongoose.model = jest.fn(() => true);
-  // Mongoose.Schema.mockImplementation(() => modelsMockedFn);
 
   return { Mongoose, mongooseMockedFn, modelsMockedFn, connectionMockedFn };
 };
@@ -46,6 +48,7 @@ const makeSut = () => {
   const Sut = MongoDb;
   const connection = MongoDb.connect();
   const schema = 'Model { heroes }';
+  // const schema = HeroesSchema;
 
   return {
     Sut,
@@ -79,7 +82,35 @@ describe('MongoDB', () => {
       expect(Sut.disconnect).toBeInstanceOf(Function);
     });
   });
-  describe('MongoDB Constructor', () => {});
+  describe('MongoDB Constructor', () => {
+    it('Should throw an error if connection is not informed', () => {
+      const { Sut, schema } = makeSut();
+
+      const act = () => {
+        new Sut(undefined, schema);
+      };
+
+      expect(act).toThrow('You must inject the dependecies');
+    });
+    it('Should throw an error if schema is not informed', () => {
+      const { Sut, connection } = makeSut();
+
+      const act = () => {
+        new Sut(connection, undefined);
+      };
+
+      expect(act).toThrow('You must inject the dependecies');
+    });
+    it('Should return an object containning', () => {
+      const { Sut, connection, schema } = makeSut();
+
+      const mongodb = new Sut(connection, schema);
+      const keys = Object.keys(mongodb);
+
+      expect(mongodb).toBeInstanceOf(Object);
+      expect(keys).toStrictEqual(['_connection', '_schema']);
+    });
+  });
   describe('MongoDB Methods', () => {});
   describe('MongoDB Static Methods', () => {});
 });
