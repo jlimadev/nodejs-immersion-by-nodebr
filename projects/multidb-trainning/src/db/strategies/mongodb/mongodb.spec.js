@@ -5,11 +5,6 @@ const Mongoose = require('mongoose');
 jest.mock('mongoose');
 
 const mongooseMock = () => {
-  const connectionMockedFn = {
-    once: jest.fn(() => console.log('ONCE')),
-    close: jest.fn(),
-  };
-
   const modelsMockedFn = {
     create: jest.fn(),
     find: jest.fn(),
@@ -21,13 +16,11 @@ const mongooseMock = () => {
   const mongooseMockedFn = {
     connect: jest.fn(),
     disconnect: jest.fn(),
-    Schema: class schema {},
-    connection: jest.fn().mockReturnValue(connectionMockedFn),
-    models: jest.fn().mockReturnValue(modelsMockedFn),
-    model: jest.fn().mockReturnValue(modelsMockedFn),
+    connection: jest.fn(),
   };
 
-  Mongoose.connection = jest.fn(() => connectionMockedFn);
+  Mongoose.connection = jest.fn();
+  Mongoose.disconnect = jest.fn().mockReturnValue(true);
   // Mongoose.Schema.mockImplementation(() => modelsMockedFn);
   // Mongoose.Model.mockImplementation(() => modelsMockedFn);
   // Mongoose.connect = jest.fn(() => true);
@@ -35,15 +28,11 @@ const mongooseMock = () => {
   // Mongoose.models = jest.fn(() => true);
   // Mongoose.model = jest.fn(() => true);
 
-  return { Mongoose, mongooseMockedFn, modelsMockedFn, connectionMockedFn };
+  return { Mongoose, mongooseMockedFn, modelsMockedFn };
 };
 
 const makeSut = () => {
-  const {
-    mongooseMockedFn,
-    modelsMockedFn,
-    connectionMockedFn,
-  } = mongooseMock();
+  const { mongooseMockedFn, modelsMockedFn } = mongooseMock();
 
   const Sut = MongoDb;
   const connection = MongoDb.connect();
@@ -56,7 +45,6 @@ const makeSut = () => {
     schema,
     mongooseMockedFn,
     modelsMockedFn,
-    connectionMockedFn,
   };
 };
 
@@ -82,6 +70,7 @@ describe('MongoDB', () => {
       expect(Sut.disconnect).toBeInstanceOf(Function);
     });
   });
+
   describe('MongoDB Constructor', () => {
     it('Should throw an error if connection is not informed', () => {
       const { Sut, schema } = makeSut();
@@ -111,6 +100,30 @@ describe('MongoDB', () => {
       expect(keys).toStrictEqual(['_connection', '_schema']);
     });
   });
-  describe('MongoDB Methods', () => {});
+
+  describe('MongoDB Methods', () => {
+    it('Should throw an error if fails on close connection', async () => {
+      const { Sut, errorMessage } = makeSut();
+      Mongoose.disconnect = jest.fn(() => {
+        throw new Error(errorMessage);
+      });
+
+      const act = async () => {
+        await Sut.disconnect();
+      };
+
+      expect(act()).rejects.toThrow('Error on close connection with MongoDB');
+      expect(Mongoose.disconnect).toHaveBeenCalled();
+    });
+
+    it('Should close the connection', async () => {
+      const { Sut } = makeSut();
+
+      const result = await Sut.disconnect();
+
+      expect(result).toBe(true);
+      expect(Mongoose.disconnect).toHaveBeenCalled();
+    });
+  });
   describe('MongoDB Static Methods', () => {});
 });
