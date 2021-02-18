@@ -36,11 +36,20 @@ const mongooseMock = () => {
 
 const makeSut = () => {
   const { mockedModelsFn, mockedConnection } = mongooseMock();
-
   const Sut = MongoDb;
   const connection = MongoDb.connect();
   const schema = mockedModelsFn;
   // const schema = HeroesSchema;
+
+  const errorMessage = 'Any error';
+  const mockUUID = '19cb7c30-da60-45e4-b6ea-0a1f889da84c';
+  const mockInput = {
+    name: 'any name',
+    power: 'any power',
+    createdAt: '2021-02-18T21:18:25.429Z',
+    __v: 0,
+  };
+  const mockReturnValue = { _id: mockUUID, ...mockInput };
 
   return {
     Sut,
@@ -48,6 +57,10 @@ const makeSut = () => {
     schema,
     mockedModelsFn,
     mockedConnection,
+    errorMessage,
+    mockUUID,
+    mockInput,
+    mockReturnValue,
   };
 };
 
@@ -107,7 +120,63 @@ describe('MongoDB', () => {
   });
 
   describe('MongoDB Methods', () => {
-    describe('create', () => {});
+    describe('create', () => {
+      it('Should throw an error if call the method without the item', async () => {
+        const { Sut, connection, schema, mockedModelsFn } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        const act = async () => {
+          await mongo.create();
+        };
+
+        expect(mockedModelsFn.create).not.toHaveBeenCalled();
+        await expect(act).rejects.toThrow(
+          'You must inform the item to be inserted',
+        );
+      });
+
+      it('Should throw an error if mongo create rejects', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          mockedModelsFn,
+          errorMessage,
+          mockInput,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        mockedModelsFn.create = jest.fn(() =>
+          Promise.reject(new Error(errorMessage)),
+        );
+
+        const act = async () => {
+          await mongo.create(mockInput);
+        };
+
+        await expect(act).rejects.toThrow('Error creating data on mongoDB');
+        expect(mockedModelsFn.create).toHaveBeenCalled();
+      });
+
+      it('Should create the item on mongoDB', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          mockedModelsFn,
+          mockInput,
+          mockReturnValue,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        mockedModelsFn.create = jest.fn().mockReturnValue(mockReturnValue);
+
+        const result = await mongo.create(mockInput);
+
+        await expect(result).toStrictEqual(mockReturnValue);
+        expect(mockedModelsFn.create).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('MongoDB Static Methods', () => {

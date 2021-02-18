@@ -17,7 +17,12 @@ class MongoDB extends ICrud {
       throw new Error('You must inform the item to be inserted');
     }
 
-    return await this._schema.create(item);
+    try {
+      return await this._schema.create(item);
+    } catch (error) {
+      const errorMessage = 'Error creating data on mongoDB';
+      throw Error(errorMessage);
+    }
   }
   // async read(){};
   // async update(){};
