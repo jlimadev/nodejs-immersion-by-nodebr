@@ -12,7 +12,13 @@ class MongoDB extends ICrud {
     this._schema = schema;
   }
 
-  // async create(){};
+  async create(item) {
+    if (!item) {
+      throw new Error('You must inform the item to be inserted');
+    }
+
+    return await this._schema.create(item);
+  }
   // async read(){};
   // async update(){};
   // async delete(){};

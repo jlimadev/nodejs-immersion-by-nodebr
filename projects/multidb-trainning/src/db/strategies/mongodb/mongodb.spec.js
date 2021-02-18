@@ -106,7 +106,9 @@ describe('MongoDB', () => {
     });
   });
 
-  describe('MongoDB Methods', () => {});
+  describe('MongoDB Methods', () => {
+    describe('create', () => {});
+  });
 
   describe('MongoDB Static Methods', () => {
     describe('disconnect', () => {
