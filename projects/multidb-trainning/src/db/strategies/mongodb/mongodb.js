@@ -16,19 +16,20 @@ class MongoDB extends ICrud {
   // async read(){};
   // async update(){};
   // async delete(){};
-  async isConnected() {}
+  // async isConnected() {}
 
   static connect() {
     try {
       const uri = 'mongodb://jlimadev:secretpass@localhost:27017/heroes';
-
       const options = {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       };
 
       Mongoose.connect(uri, options);
+
       const connection = Mongoose.connection;
+
       return connection;
     } catch (error) {
       const errorMessage = 'Error on connect with MongoDB';
@@ -38,8 +39,8 @@ class MongoDB extends ICrud {
 
   static async disconnect() {
     try {
-      Mongoose.disconnect();
-      console.log('Diconnected from database');
+      await Mongoose.disconnect();
+      console.log('Disconnected from database');
       return true;
     } catch (error) {
       const errorMessage = 'Error on close connection with MongoDB';

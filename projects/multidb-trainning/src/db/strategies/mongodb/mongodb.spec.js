@@ -1,10 +1,19 @@
 const MongoDb = require('./mongodb');
 const Mongoose = require('mongoose');
+// const HeroesSchema = require('./schemas/heroesSchema');
 
 jest.mock('mongoose');
 
 const mongooseMock = () => {
-  const modelsMockedFn = {
+  const STATES = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+    99: 'uninitialized',
+  };
+
+  const mockedModelsFn = {
     create: jest.fn(),
     find: jest.fn(),
     updateOne: jest.fn(),
@@ -12,31 +21,32 @@ const mongooseMock = () => {
     deleteMany: jest.fn(),
   };
 
-  const STATES = {
-    0: 'disconnected',
-    1: 'connected',
-    2: 'connecting',
-    3: 'disconnecting',
+  const mockedConnection = {
+    models: { heroes: 'Model { heroes }' },
+    model: jest.fn().mockReturnValue(mockedModelsFn),
+    Schema: jest.fn(),
+    states: STATES,
   };
 
-  Mongoose.connection = jest.fn().mockReturnValue({ STATES, modelsMockedFn });
+  Mongoose.connection = mockedConnection;
   Mongoose.disconnect = jest.fn().mockReturnValue(true);
 
-  return { Mongoose, STATES, modelsMockedFn };
+  return { mockedModelsFn, mockedConnection };
 };
 
 const makeSut = () => {
-  const { modelsMockedFn } = mongooseMock();
+  const { mockedModelsFn, mockedConnection } = mongooseMock();
 
   const Sut = MongoDb;
   const connection = MongoDb.connect();
-  const schema = modelsMockedFn;
+  const schema = mockedModelsFn;
 
   return {
     Sut,
     connection,
     schema,
-    modelsMockedFn,
+    mockedModelsFn,
+    mockedConnection,
   };
 };
 
@@ -123,8 +133,15 @@ describe('MongoDB', () => {
       });
     });
 
-    describe.only('connect', () => {
-      it('Should throw an error if fails connect method fails', () => {
+    describe('connect', () => {
+      it('Should return the connection object', () => {
+        const { Sut, mockedConnection } = makeSut();
+        const result = Sut.connect();
+
+        expect(result).toStrictEqual(mockedConnection);
+      });
+
+      it('Should throw an error if connect method fails', () => {
         const { Sut, errorMessage } = makeSut();
 
         Mongoose.connect = jest.fn(() => {
@@ -137,14 +154,6 @@ describe('MongoDB', () => {
 
         expect(act).toThrow('Error on connect with MongoDB');
         expect(Mongoose.connect).toHaveBeenCalled();
-      });
-
-      it.only('Should return the connection object', () => {
-        const { Sut, STATES, modelsMockedFn } = makeSut();
-        const result = Sut.connect();
-        console.log('RESULT', result);
-
-        expect(result).toBe({ STATES, modelsMockedFn });
       });
     });
   });
