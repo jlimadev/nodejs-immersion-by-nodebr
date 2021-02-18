@@ -13,9 +13,14 @@ const mongooseMock = () => {
     99: 'uninitialized',
   };
 
+  const mockFind = {
+    skip: jest.fn(),
+    limit: jest.fn(),
+  };
+
   const mockedModelsFn = {
     create: jest.fn(),
-    find: jest.fn(),
+    find: jest.fn(() => mockFind),
     updateOne: jest.fn(),
     deleteOne: jest.fn(),
     deleteMany: jest.fn(),
@@ -175,6 +180,40 @@ describe('MongoDB', () => {
 
         await expect(result).toStrictEqual(mockReturnValue);
         expect(mockedModelsFn.create).toHaveBeenCalled();
+      });
+    });
+
+    describe.only('read', () => {
+      it('Should return an error if read fails/throw', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          mockUUID,
+          mockedModelsFn,
+          errorMessage,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+        const searchItem = { _id: mockUUID };
+
+        mockedModelsFn.find = jest.fn(() =>
+          Promise.reject(new Error(errorMessage)),
+        );
+
+        // mockedModelsFn.find.skip = jest.fn(() =>
+        //   Promise.reject(new Error(errorMessage)),
+        // );
+
+        // mockedModelsFn.find.limit = jest.fn(() =>
+        //   Promise.reject(new Error(errorMessage)),
+        // );
+
+        const act = async () => {
+          await mongo.read(searchItem);
+        };
+
+        await expect(act).rejects.toThrow('Error getting data from mongoDB');
+        expect(mockedModelsFn.find).toHaveBeenCalled();
       });
     });
   });

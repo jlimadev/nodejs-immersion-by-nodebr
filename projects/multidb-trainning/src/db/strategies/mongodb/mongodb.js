@@ -24,7 +24,15 @@ class MongoDB extends ICrud {
       throw Error(errorMessage);
     }
   }
-  // async read(){};
+
+  async read(item, skip = 0, limit = 10) {
+    try {
+      return await this._schema.find(item).skip(skip).limit(limit);
+    } catch (error) {
+      const errorMessage = 'Error getting data from mongoDB';
+      throw Error(errorMessage);
+    }
+  }
   // async update(){};
   // async delete(){};
   // async isConnected() {}
