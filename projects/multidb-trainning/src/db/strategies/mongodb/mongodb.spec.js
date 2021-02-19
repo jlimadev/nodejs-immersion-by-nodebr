@@ -183,7 +183,7 @@ describe('MongoDB', () => {
       });
     });
 
-    describe.only('read', () => {
+    describe('read', () => {
       it('Should return an error if read fails/throw', async () => {
         const {
           Sut,
