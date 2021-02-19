@@ -33,7 +33,17 @@ class MongoDB extends ICrud {
       throw Error(errorMessage);
     }
   }
-  // async update(){};
+
+  async update(id, item) {
+    if (!id) throw new Error('You must inform the id to be updated');
+    if (!item) throw new Error('You must inform the item to be updated');
+    try {
+      return await this._schema.updateOne({ _id: id }, { $set: item });
+    } catch (error) {
+      const errorMessage = 'Error updating data on mongoDB';
+      throw Error(errorMessage);
+    }
+  }
   // async delete(){};
   // async isConnected() {}
 
