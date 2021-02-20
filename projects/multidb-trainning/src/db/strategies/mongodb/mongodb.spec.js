@@ -253,6 +253,33 @@ describe('MongoDB', () => {
         );
         expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
       });
+
+      it('Should fail if any error happens on updateOne from mongooose', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          errorMessage,
+          mockUUID,
+          mockUpdate,
+          mockedModelsFn,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        mockedModelsFn.updateOne = jest.fn(() =>
+          Promise.reject(new Error(errorMessage)),
+        );
+
+        const act = async () => {
+          await mongo.update(mockUUID, mockUpdate);
+        };
+
+        await expect(act).rejects.toThrow('Error updating data on mongoDB');
+        expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
+          { _id: mockUUID },
+          { $set: mockUpdate },
+        );
+      });
     });
   });
 

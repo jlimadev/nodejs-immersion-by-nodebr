@@ -40,6 +40,7 @@ class MongoDB extends ICrud {
       throw new Error('You must inform the UUID to be updated');
 
     if (!item) throw new Error('You must inform the item to be updated');
+
     try {
       return await this._schema.updateOne({ _id: id }, { $set: item });
     } catch (error) {
