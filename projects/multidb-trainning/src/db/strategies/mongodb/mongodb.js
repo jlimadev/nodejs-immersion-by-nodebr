@@ -1,5 +1,6 @@
 const ICrud = require('../interfaces/ICrud');
 const Mongoose = require('mongoose');
+const isUUID = require('../../../utils/validateUUID');
 
 class MongoDB extends ICrud {
   constructor(connection, schema) {
@@ -35,7 +36,9 @@ class MongoDB extends ICrud {
   }
 
   async update(id, item) {
-    if (!id) throw new Error('You must inform the id to be updated');
+    if (!id || !isUUID(id))
+      throw new Error('You must inform the UUID to be updated');
+
     if (!item) throw new Error('You must inform the item to be updated');
     try {
       return await this._schema.updateOne({ _id: id }, { $set: item });
