@@ -280,6 +280,52 @@ describe('MongoDB', () => {
           { $set: mockUpdate },
         );
       });
+
+      it('Should update successfuly and result a summary of transaction', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          mockUUID,
+          mockUpdate,
+          mockedModelsFn,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+        const expectedResult = { n: 1, nModified: 1, ok: 1 };
+
+        mockedModelsFn.updateOne = jest.fn().mockReturnValue(expectedResult);
+
+        const result = await mongo.update(mockUUID, mockUpdate);
+
+        await expect(result).toBe(expectedResult);
+        expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
+          { _id: mockUUID },
+          { $set: mockUpdate },
+        );
+      });
+
+      it('Should not update if id does not exist and result a summary of transaction', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          mockUUID,
+          mockUpdate,
+          mockedModelsFn,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+        const expectedResult = { n: 0, nModified: 0, ok: 1 };
+
+        mockedModelsFn.updateOne = jest.fn().mockReturnValue(expectedResult);
+
+        const result = await mongo.update(mockUUID, mockUpdate);
+
+        await expect(result).toBe(expectedResult);
+        expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
+          { _id: mockUUID },
+          { $set: mockUpdate },
+        );
+      });
     });
   });
 
