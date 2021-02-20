@@ -54,6 +54,7 @@ const makeSut = () => {
     createdAt: '2021-02-18T21:18:25.429Z',
     __v: 0,
   };
+  const mockUpdate = { name: 'any other name', power: 'any other power' };
   const mockReturnValue = { _id: mockUUID, ...mockInput };
 
   return {
@@ -65,6 +66,7 @@ const makeSut = () => {
     errorMessage,
     mockUUID,
     mockInput,
+    mockUpdate,
     mockReturnValue,
   };
 };
@@ -214,6 +216,21 @@ describe('MongoDB', () => {
 
         await expect(act).rejects.toThrow('Error getting data from mongoDB');
         expect(mockedModelsFn.find).toHaveBeenCalled();
+      });
+    });
+
+    describe.only('update', () => {
+      it('Should throw an error if uuid is not sent', async () => {
+        const { Sut, connection, schema, mockUpdate } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        const act = async () => {
+          await mongo.update(undefined, mockUpdate);
+        };
+
+        await expect(act).rejects.toThrow(
+          'You must inform the UUID to be updated',
+        );
       });
     });
   });
