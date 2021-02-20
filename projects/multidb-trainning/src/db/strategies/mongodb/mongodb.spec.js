@@ -14,8 +14,9 @@ const mongooseMock = () => {
   };
 
   const mockFind = {
-    skip: jest.fn(),
-    limit: jest.fn(),
+    sort: jest.fn(() => mockFind),
+    skip: jest.fn(() => mockFind),
+    limit: jest.fn(() => mockFind),
   };
 
   const mockedModelsFn = {
@@ -36,11 +37,11 @@ const mongooseMock = () => {
   Mongoose.connect = jest.fn().mockReturnValue(true);
   Mongoose.disconnect = jest.fn().mockReturnValue(true);
 
-  return { mockedModelsFn, mockedConnection };
+  return { mockFind, mockedModelsFn, mockedConnection };
 };
 
 const makeSut = () => {
-  const { mockedModelsFn, mockedConnection } = mongooseMock();
+  const { mockedModelsFn, mockedConnection, mockFind } = mongooseMock();
   const Sut = MongoDb;
   const connection = MongoDb.connect();
   const schema = mockedModelsFn;
@@ -62,6 +63,7 @@ const makeSut = () => {
     connection,
     schema,
     mockedModelsFn,
+    mockFind,
     mockedConnection,
     errorMessage,
     mockUUID,
@@ -193,22 +195,13 @@ describe('MongoDB', () => {
           schema,
           mockUUID,
           mockedModelsFn,
+          mockFind,
           errorMessage,
         } = makeSut();
         const mongo = new Sut(connection, schema);
         const searchItem = { _id: mockUUID };
 
-        mockedModelsFn.find = jest.fn(() =>
-          Promise.reject(new Error(errorMessage)),
-        );
-
-        // mockedModelsFn.find.skip = jest.fn(() =>
-        //   Promise.reject(new Error(errorMessage)),
-        // );
-
-        // mockedModelsFn.find.limit = jest.fn(() =>
-        //   Promise.reject(new Error(errorMessage)),
-        // );
+        mockFind.limit = jest.fn(() => Promise.reject(new Error(errorMessage)));
 
         const act = async () => {
           await mongo.read(searchItem);
@@ -216,10 +209,35 @@ describe('MongoDB', () => {
 
         await expect(act).rejects.toThrow('Error getting data from mongoDB');
         expect(mockedModelsFn.find).toHaveBeenCalled();
+        expect(mockFind.skip).toHaveBeenCalledWith(0);
+        expect(mockFind.limit).toHaveBeenCalledWith(10);
+      });
+
+      it('Should return an array with the results', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          mockUUID,
+          mockedModelsFn,
+          mockFind,
+          mockReturnValue,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+        const searchItem = { _id: mockUUID };
+
+        mockFind.limit = jest.fn(() => mockReturnValue);
+
+        const result = await mongo.read(searchItem);
+
+        await expect(result).toBe(mockReturnValue);
+        expect(mockedModelsFn.find).toHaveBeenCalled();
+        expect(mockFind.skip).toHaveBeenCalledWith(0);
+        expect(mockFind.limit).toHaveBeenCalledWith(10);
       });
     });
 
-    describe.only('update', () => {
+    describe('update', () => {
       it('Should throw an error if uuid is not sent', async () => {
         const {
           Sut,
@@ -297,7 +315,7 @@ describe('MongoDB', () => {
 
         const result = await mongo.update(mockUUID, mockUpdate);
 
-        await expect(result).toBe(expectedResult);
+        expect(result).toBe(expectedResult);
         expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
           { _id: mockUUID },
           { $set: mockUpdate },
@@ -320,7 +338,7 @@ describe('MongoDB', () => {
 
         const result = await mongo.update(mockUUID, mockUpdate);
 
-        await expect(result).toBe(expectedResult);
+        expect(result).toBe(expectedResult);
         expect(mockedModelsFn.updateOne).toHaveBeenCalledWith(
           { _id: mockUUID },
           { $set: mockUpdate },
