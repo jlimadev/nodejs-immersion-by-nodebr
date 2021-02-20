@@ -221,7 +221,13 @@ describe('MongoDB', () => {
 
     describe.only('update', () => {
       it('Should throw an error if uuid is not sent', async () => {
-        const { Sut, connection, schema, mockUpdate } = makeSut();
+        const {
+          Sut,
+          connection,
+          schema,
+          mockUpdate,
+          mockedModelsFn,
+        } = makeSut();
         const mongo = new Sut(connection, schema);
 
         const act = async () => {
@@ -231,6 +237,21 @@ describe('MongoDB', () => {
         await expect(act).rejects.toThrow(
           'You must inform the UUID to be updated',
         );
+        expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
+      });
+
+      it('Should throw an error if item is not sent', async () => {
+        const { Sut, connection, schema, mockUUID, mockedModelsFn } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        const act = async () => {
+          await mongo.update(mockUUID, undefined);
+        };
+
+        await expect(act).rejects.toThrow(
+          'You must inform the item to be updated',
+        );
+        expect(mockedModelsFn.updateOne).not.toHaveBeenCalled();
       });
     });
   });
