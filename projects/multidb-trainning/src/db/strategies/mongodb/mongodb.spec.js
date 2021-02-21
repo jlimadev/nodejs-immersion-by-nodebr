@@ -394,7 +394,28 @@ describe('MongoDB', () => {
         expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
       });
 
-      it('should delete based on id using deleteOne from mongoose', async () => {});
+      it('should delete based on id using deleteOne from mongoose', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          errorMessage,
+          mockedModelsFn,
+          mockUUID,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        mockedModelsFn.deleteOne = jest
+          .fn()
+          .mockReturnValue({ n: 1, ok: 1, deletedCount: 1 });
+
+        const result = await mongo.delete(mockUUID);
+
+        expect(result).toStrictEqual({ n: 1, ok: 1, deletedCount: 1 });
+        expect(mockedModelsFn.deleteOne).toHaveBeenCalledWith({
+          _id: mockUUID,
+        });
+      });
       // it('should delete all using deleteMany from mongoose', async () => {});
     });
   });
