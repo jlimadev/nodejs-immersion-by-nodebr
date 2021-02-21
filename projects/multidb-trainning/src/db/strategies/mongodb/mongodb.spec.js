@@ -346,7 +346,7 @@ describe('MongoDB', () => {
       });
     });
 
-    describe.only('delete', () => {
+    describe('delete', () => {
       it('should return an error if deleteOne from mongoose fails', async () => {
         const {
           Sut,
@@ -395,14 +395,7 @@ describe('MongoDB', () => {
       });
 
       it('should delete based on id using deleteOne from mongoose', async () => {
-        const {
-          Sut,
-          connection,
-          schema,
-          errorMessage,
-          mockedModelsFn,
-          mockUUID,
-        } = makeSut();
+        const { Sut, connection, schema, mockedModelsFn, mockUUID } = makeSut();
         const mongo = new Sut(connection, schema);
 
         mockedModelsFn.deleteOne = jest
@@ -416,7 +409,20 @@ describe('MongoDB', () => {
           _id: mockUUID,
         });
       });
-      // it('should delete all using deleteMany from mongoose', async () => {});
+
+      it('should delete all using deleteMany from mongoose', async () => {
+        const { Sut, connection, schema, mockedModelsFn } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        mockedModelsFn.deleteMany = jest
+          .fn()
+          .mockReturnValue({ n: 2, ok: 1, deletedCount: 2 });
+
+        const result = await mongo.delete();
+
+        expect(result).toStrictEqual({ n: 2, ok: 1, deletedCount: 2 });
+        expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
+      });
     });
   });
 
