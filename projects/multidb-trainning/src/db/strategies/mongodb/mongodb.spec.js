@@ -379,7 +379,6 @@ describe('MongoDB', () => {
           schema,
           errorMessage,
           mockedModelsFn,
-          mockUUID,
         } = makeSut();
         const mongo = new Sut(connection, schema);
 
@@ -394,7 +393,8 @@ describe('MongoDB', () => {
         await expect(act).rejects.toThrow('Error deleting data on mongoDB');
         expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
       });
-      // it('should delete based on id using deleteOne from mongoose', async () => {});
+
+      it('should delete based on id using deleteOne from mongoose', async () => {});
       // it('should delete all using deleteMany from mongoose', async () => {});
     });
   });
