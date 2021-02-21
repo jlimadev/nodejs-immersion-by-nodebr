@@ -48,7 +48,17 @@ class MongoDB extends ICrud {
       throw Error(errorMessage);
     }
   }
-  // async delete(){};
+
+  async delete(id) {
+    try {
+      return id
+        ? await this._schema.deleteOne({ _id: id })
+        : await this._schema.deleteMany({});
+    } catch (error) {
+      const errorMessage = 'Error deleting data on mongoDB';
+      throw Error(errorMessage);
+    }
+  }
   // async isConnected() {}
 
   static connect() {
