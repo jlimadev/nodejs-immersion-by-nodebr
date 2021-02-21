@@ -345,6 +345,36 @@ describe('MongoDB', () => {
         );
       });
     });
+
+    describe.only('delete', () => {
+      it('should return an error if deleteOne from mongoose fails', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          errorMessage,
+          mockedModelsFn,
+          mockUUID,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        mockedModelsFn.deleteOne = jest.fn(() =>
+          Promise.reject(new Error(errorMessage)),
+        );
+
+        const act = async () => {
+          await mongo.delete(mockUUID);
+        };
+
+        await expect(act).rejects.toThrow('Error deleting data on mongoDB');
+        expect(mockedModelsFn.deleteOne).toHaveBeenCalledWith({
+          _id: mockUUID,
+        });
+      });
+      // it('should return an error if deleteMany from mongoose fails', async () => {});
+      // it('should delete based on id using deleteOne from mongoose', async () => {});
+      // it('should delete all using deleteMany from mongoose', async () => {});
+    });
   });
 
   describe('MongoDB Static Methods', () => {
