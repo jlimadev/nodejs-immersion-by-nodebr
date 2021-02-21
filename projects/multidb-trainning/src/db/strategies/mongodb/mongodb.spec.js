@@ -371,7 +371,29 @@ describe('MongoDB', () => {
           _id: mockUUID,
         });
       });
-      // it('should return an error if deleteMany from mongoose fails', async () => {});
+
+      it('should return an error if deleteMany from mongoose fails', async () => {
+        const {
+          Sut,
+          connection,
+          schema,
+          errorMessage,
+          mockedModelsFn,
+          mockUUID,
+        } = makeSut();
+        const mongo = new Sut(connection, schema);
+
+        mockedModelsFn.deleteMany = jest.fn(() =>
+          Promise.reject(new Error(errorMessage)),
+        );
+
+        const act = async () => {
+          await mongo.delete();
+        };
+
+        await expect(act).rejects.toThrow('Error deleting data on mongoDB');
+        expect(mockedModelsFn.deleteMany).toHaveBeenCalledWith({});
+      });
       // it('should delete based on id using deleteOne from mongoose', async () => {});
       // it('should delete all using deleteMany from mongoose', async () => {});
     });
