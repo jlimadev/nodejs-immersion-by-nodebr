@@ -14,6 +14,7 @@ const returnValue = Mongoose.models[modelName]
   ? Mongoose.model(modelName)
   : Mongoose.model(modelName, heroesSchema);
 
-console.log('Mongoose.model', Mongoose.model);
+console.log('Mongoose.model', Mongoose.model(modelName, heroesSchema));
+console.log('Mongoose.models[modelName]', Mongoose.models[modelName]);
 
 module.exports = returnValue;
