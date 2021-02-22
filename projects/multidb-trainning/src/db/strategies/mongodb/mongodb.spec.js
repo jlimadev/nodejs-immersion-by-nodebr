@@ -1,5 +1,6 @@
 const MongoDb = require('./mongodb');
 const Mongoose = require('mongoose');
+const heroesSchema = require('./schemas/heroesSchema');
 
 jest.mock('mongoose');
 
@@ -35,6 +36,7 @@ const mongooseMock = () => {
   Mongoose.connection = mockedConnection;
   Mongoose.connect = jest.fn().mockReturnValue(true);
   Mongoose.disconnect = jest.fn().mockReturnValue(true);
+  // Mongoose.model.mockImplementation(() => true);
 
   return { mockFind, mockedModelsFn, mockedConnection };
 };
