@@ -13,6 +13,7 @@ module.exports = {
     '!**/jest.config.js',
     '!src/**/debug*.js',
     '!src/**/mongodbCommands.js',
+    '!src/**/ContextStrategy.js',
   ],
   coverageDirectory: './coverage',
   coverageReporters: ['lcov', 'text'],
