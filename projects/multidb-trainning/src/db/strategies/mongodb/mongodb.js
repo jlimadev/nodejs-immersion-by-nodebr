@@ -59,7 +59,6 @@ class MongoDB extends ICrud {
       throw Error(errorMessage);
     }
   }
-  // async isConnected() {}
 
   static connect() {
     try {

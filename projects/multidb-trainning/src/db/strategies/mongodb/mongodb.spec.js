@@ -1,6 +1,5 @@
 const MongoDb = require('./mongodb');
 const Mongoose = require('mongoose');
-// const HeroesSchema = require('./schemas/heroesSchema');
 
 jest.mock('mongoose');
 
@@ -45,7 +44,6 @@ const makeSut = () => {
   const Sut = MongoDb;
   const connection = MongoDb.connect();
   const schema = mockedModelsFn;
-  // const schema = HeroesSchema;
 
   const errorMessage = 'Any error';
   const mockUUID = '19cb7c30-da60-45e4-b6ea-0a1f889da84c';
