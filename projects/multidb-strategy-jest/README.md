@@ -1,6 +1,6 @@
 # Multi Database Project
 
-Using Strategy Design Pattern to implement this multi-database project.
+My own implementation of this project using `Strategy Design Pattern` to implement this multi-database and testing with `Jest`
 
 For this project you can Postgres or MongoDB, but if you want to add any other database, feel free to do it.
 

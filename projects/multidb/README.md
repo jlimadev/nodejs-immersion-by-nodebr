@@ -1,8 +1,6 @@
 # Multi Database Project
 
-Using Strategy Design Pattern to implement this multi-database project.
-
-Testing with Jest
+Course based project - using Strategy Design Pattern to implement this multi-database project and mocha/chai to test.
 
 For this project you can Postgres or MongoDB, but if you want to add any other database, feel free to do it.
 
