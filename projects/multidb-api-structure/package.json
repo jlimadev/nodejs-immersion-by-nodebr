@@ -1,0 +1,18 @@
+{
+  "name": "multidb-api-structure",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha ./src/tests/*.test.js",
+    "test:watch": "mocha ./src/tests/*.test.js -w"
+  },
+  "dependencies": {
+    "hapi": "^18.1.0",
+    "mongoose": "^5.11.15",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.5.0",
+    "uuid": "^8.3.2"
+  }
+}
