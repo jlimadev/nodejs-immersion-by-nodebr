@@ -37,4 +37,17 @@ describe.only('Test to api hereoes', () => {
     assert.ok(Array.isArray(data));
     assert.ok(data.length <= LIMIT);
   });
+
+  it('Should fail if limit or skip are string', async () => {
+    const LIMIT = 'ANYWRONG';
+    const SKIP = 'ANYWRONG';
+    const result = await app.inject({
+      method: 'GET',
+      url: `/heroes?skip=${SKIP}&limit=${LIMIT}`,
+    });
+
+    const { statusCode, statusMessage } = result;
+    assert.strictEqual(statusCode, 500);
+    assert.strictEqual(statusMessage, 'Internal Server Error');
+  });
 });
