@@ -50,4 +50,21 @@ describe.only('Test to api hereoes', () => {
     assert.strictEqual(statusCode, 500);
     assert.strictEqual(statusMessage, 'Internal Server Error');
   });
+
+  it('Should filter by name', async () => {
+    const LIMIT = 10;
+    const SKIP = 0;
+    const NAME = 'Ruru';
+    const result = await app.inject({
+      method: 'GET',
+      url: `/heroes?skip=${SKIP}&limit=${LIMIT}&name=${NAME}`,
+    });
+
+    const { statusCode, payload } = result;
+    const data = JSON.parse(payload);
+
+    assert.strictEqual(data[0].name, NAME);
+    assert.strictEqual(statusCode, 200);
+    assert.ok(Array.isArray(data));
+  });
 });
