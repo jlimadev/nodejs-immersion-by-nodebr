@@ -11,7 +11,19 @@ class HeroRoutes extends BaseRoute {
       path: '/heroes',
       method: 'GET',
       handler: (request, response) => {
-        return this.db.read();
+        try {
+          const {
+            query: { skip, limit, name },
+          } = request;
+
+          const query = name ? { name: name } : {};
+          if (skip && isNaN(skip)) throw new Error('Limit must be a number');
+          if (limit && isNaN(limit)) throw new Error('Limit must be a number');
+
+          return this.db.read(query, parseInt(skip), parseInt(limit));
+        } catch (error) {
+          console.error('Deu ruim', error);
+        }
       },
     };
   }
