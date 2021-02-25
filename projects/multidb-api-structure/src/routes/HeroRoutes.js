@@ -12,31 +12,31 @@ class HeroRoutes extends BaseRoute {
       path: '/heroes',
       method: 'GET',
       handler: (request, response) => {
+        const DEFAULT_SKIP = 0;
+        const DEFAULT_LIMIT = 10;
+
         const schema = Joi.object({
-          query: Joi.object().keys({
-            skip: Joi.number().default(0),
-            limit: Joi.number().default(1),
-            name: Joi.string().min(3).max(100),
-          }),
+          skip: Joi.number().default(DEFAULT_SKIP),
+          limit: Joi.number().default(DEFAULT_LIMIT),
+          name: Joi.string().min(3).max(100),
         });
 
         try {
           const { query } = request;
-          schema.validate(query);
+          const validation = schema.validate(query);
 
-          const { name, skip, limit } = query;
+          if (validation.error) {
+            throw new Error(
+              '[VALIDATION ERROR]',
+              validation.error.details.message,
+            );
+          }
 
+          const { name, skip, limit } = validation.value;
           const search = name ? { name: name } : {};
-
-          console.log({ limit, skip });
-
-          return this.db.read(
-            search,
-            parseInt(query.skip),
-            parseInt(query.limit),
-          );
+          return this.db.read(search, skip, limit);
         } catch (error) {
-          console.error('Deu ruim', error);
+          throw Error(error);
         }
       },
     };
