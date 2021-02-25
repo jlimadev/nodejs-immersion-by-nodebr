@@ -1,4 +1,5 @@
 const BaseRoute = require('./base/BaseRoute');
+const Joi = require('joi');
 
 class HeroRoutes extends BaseRoute {
   constructor(db) {
@@ -11,16 +12,29 @@ class HeroRoutes extends BaseRoute {
       path: '/heroes',
       method: 'GET',
       handler: (request, response) => {
+        const schema = Joi.object({
+          query: Joi.object().keys({
+            skip: Joi.number().default(0),
+            limit: Joi.number().default(1),
+            name: Joi.string().min(3).max(100),
+          }),
+        });
+
         try {
-          const {
-            query: { skip, limit, name },
-          } = request;
+          const { query } = request;
+          schema.validate(query);
 
-          const query = name ? { name: name } : {};
-          if (skip && isNaN(skip)) throw new Error('Limit must be a number');
-          if (limit && isNaN(limit)) throw new Error('Limit must be a number');
+          const { name, skip, limit } = query;
 
-          return this.db.read(query, parseInt(skip), parseInt(limit));
+          const search = name ? { name: name } : {};
+
+          console.log({ limit, skip });
+
+          return this.db.read(
+            search,
+            parseInt(query.skip),
+            parseInt(query.limit),
+          );
         } catch (error) {
           console.error('Deu ruim', error);
         }

@@ -3,7 +3,7 @@ const api = require('../api');
 
 let app = {};
 
-describe('Test to api hereoes', () => {
+describe.only('Test to api hereoes', () => {
   before(async () => {
     app = await api;
   });
@@ -12,7 +12,7 @@ describe('Test to api hereoes', () => {
     it('Should list the heroes on /heroes', async () => {
       const result = await app.inject({
         method: 'GET',
-        url: '/heroes',
+        url: `/heroes`,
       });
 
       const { statusCode, payload } = result;
@@ -39,7 +39,7 @@ describe('Test to api hereoes', () => {
       assert.ok(data.length <= LIMIT);
     });
 
-    it('Should fail if limit or skip are string', async () => {
+    it.only('Should return default values to skip and limit if they are empty or invalid', async () => {
       const LIMIT = 'ANYWRONG';
       const SKIP = 'ANYWRONG';
       const result = await app.inject({
@@ -47,9 +47,11 @@ describe('Test to api hereoes', () => {
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}`,
       });
 
+      console.log(result);
+
       const { statusCode, statusMessage } = result;
-      assert.strictEqual(statusCode, 500);
-      assert.strictEqual(statusMessage, 'Internal Server Error');
+      assert.strictEqual(statusCode, 200);
+      assert.strictEqual(statusMessage, 'OK');
     });
 
     it('Should filter by name', async () => {

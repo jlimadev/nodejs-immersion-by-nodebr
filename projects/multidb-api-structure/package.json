@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "hapi": "^18.1.0",
+    "joi": "^17.4.0",
     "mongoose": "^5.11.15",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",

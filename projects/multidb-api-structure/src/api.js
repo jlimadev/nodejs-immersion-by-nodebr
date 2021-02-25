@@ -13,15 +13,19 @@ const mapRoutes = (instance, methods) => {
 };
 
 const main = async () => {
-  const connection = MongoDB.connect();
-  const context = new Context(new MongoDB(connection, schema));
+  try {
+    const connection = MongoDB.connect();
+    const context = new Context(new MongoDB(connection, schema));
 
-  app.route([...mapRoutes(new HeroRoutes(context), HeroRoutes.methods())]);
+    app.route([...mapRoutes(new HeroRoutes(context), HeroRoutes.methods())]);
 
-  await app.start();
-  console.log(`server running on ${app.info.port}`);
+    await app.start();
+    console.log(`server running on ${app.info.port}`);
 
-  return app;
+    return app;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 module.exports = main();
