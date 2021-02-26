@@ -12,31 +12,32 @@ class HeroRoutes extends BaseRoute {
       path: '/heroes',
       method: 'GET',
       handler: (request, response) => {
-        const DEFAULT_SKIP = 0;
-        const DEFAULT_LIMIT = 10;
+        const { query } = request;
 
         const schema = Joi.object({
-          skip: Joi.number().default(DEFAULT_SKIP),
-          limit: Joi.number().default(DEFAULT_LIMIT),
+          skip: Joi.number().default(0),
+          limit: Joi.number().default(10),
           name: Joi.string().min(3).max(100),
         });
 
+        const validation = schema.validate(query);
+
+        if (validation.error) {
+          const error = {
+            statusCode: 400,
+            statusMessage: 'Bad Request',
+            error: { message: validation.error.details[0].message },
+          };
+          return error;
+        }
+
         try {
-          const { query } = request;
-          const validation = schema.validate(query);
-
-          if (validation.error) {
-            throw new Error(
-              '[VALIDATION ERROR]',
-              validation.error.details.message,
-            );
-          }
-
           const { name, skip, limit } = validation.value;
           const search = name ? { name: name } : {};
           return this.db.read(search, skip, limit);
         } catch (error) {
-          throw Error(error);
+          console.log('VAI CARAI', error);
+          throw new Error(error);
         }
       },
     };

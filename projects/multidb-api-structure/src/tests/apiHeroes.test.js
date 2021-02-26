@@ -46,9 +46,11 @@ describe.only('Test to api hereoes', () => {
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}`,
       });
 
-      const { statusCode, statusMessage } = result;
-      assert.strictEqual(statusCode, 500);
-      assert.strictEqual(statusMessage, 'Internal Server Error');
+      const payload = JSON.parse(result.payload);
+      const { statusCode, statusMessage, error } = payload;
+      assert.strictEqual(statusCode, 400);
+      assert.strictEqual(statusMessage, 'Bad Request');
+      assert.strictEqual(error.message, '"skip" must be a number');
     });
 
     it('Should filter by name', async () => {

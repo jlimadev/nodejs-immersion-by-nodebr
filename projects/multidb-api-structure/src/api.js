@@ -24,7 +24,7 @@ const main = async () => {
 
     return app;
   } catch (error) {
-    console.error(error);
+    throw error;
   } finally {
     // MongoDB.disconnect();
     // app.stop();
