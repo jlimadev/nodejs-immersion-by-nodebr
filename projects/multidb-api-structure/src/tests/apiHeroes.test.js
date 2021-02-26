@@ -38,7 +38,7 @@ describe.only('Test to api hereoes', () => {
       assert.ok(data.length <= LIMIT);
     });
 
-    it('Should fail if skip and limit if they invalid', async () => {
+    it.only('Should fail if skip and limit if they invalid', async () => {
       const LIMIT = 'ANYWRONG';
       const SKIP = 'ANYWRONG';
       const result = await app.inject({
@@ -46,8 +46,9 @@ describe.only('Test to api hereoes', () => {
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}`,
       });
 
-      const payload = JSON.parse(result.payload);
-      const { statusCode, statusMessage, error } = payload;
+      const {
+        result: { statusCode, statusMessage, error },
+      } = result;
       assert.strictEqual(statusCode, 400);
       assert.strictEqual(statusMessage, 'Bad Request');
       assert.strictEqual(error.message, '"skip" must be a number');

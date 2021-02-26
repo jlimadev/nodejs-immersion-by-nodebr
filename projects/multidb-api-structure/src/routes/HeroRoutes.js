@@ -11,7 +11,7 @@ class HeroRoutes extends BaseRoute {
     return {
       path: '/heroes',
       method: 'GET',
-      handler: (request, response) => {
+      handler: (request, hapi) => {
         const { query } = request;
 
         const schema = Joi.object({
@@ -28,7 +28,7 @@ class HeroRoutes extends BaseRoute {
             statusMessage: 'Bad Request',
             error: { message: validation.error.details[0].message },
           };
-          return error;
+          return hapi.response(error).code(error.statusCode);
         }
 
         try {
@@ -36,7 +36,6 @@ class HeroRoutes extends BaseRoute {
           const search = name ? { name: name } : {};
           return this.db.read(search, skip, limit);
         } catch (error) {
-          console.log('VAI CARAI', error);
           throw new Error(error);
         }
       },
