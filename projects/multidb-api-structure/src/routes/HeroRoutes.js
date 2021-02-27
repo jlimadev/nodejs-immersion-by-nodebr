@@ -11,8 +11,8 @@ class HeroRoutes extends BaseRoute {
     return {
       path: '/heroes',
       method: 'GET',
-      handler: (request, hapi) => {
-        const { query } = request;
+      handler: (req, res) => {
+        const { query } = req;
 
         const schema = Joi.object({
           skip: Joi.number().default(0),
@@ -23,12 +23,13 @@ class HeroRoutes extends BaseRoute {
         const validation = schema.validate(query);
 
         if (validation.error) {
+          const statusCode = 400;
           const error = {
             statusCode: 400,
             statusMessage: 'Bad Request',
             error: { message: validation.error.details[0].message },
           };
-          return hapi.response(error).code(error.statusCode);
+          return res.response(error).code(statusCode);
         }
 
         try {
@@ -42,9 +43,39 @@ class HeroRoutes extends BaseRoute {
     };
   }
 
-  // create() {
-  //   return {};
-  // }
+  create() {
+    return {
+      path: '/heroes',
+      method: 'POST',
+      handler: async (req, res) => {
+        const { payload } = req;
+
+        const schema = Joi.object({
+          name: Joi.string().required().min(3).max(100),
+          power: Joi.string().required().min(3).max(100),
+        });
+
+        const validation = schema.validate(payload);
+
+        if (validation.error) {
+          const statusCode = 400;
+          const error = {
+            statusCode,
+            statusMessage: 'Bad Request',
+            error: { message: validation.error.details[0].message },
+          };
+          return res.response(error).code(statusCode);
+        }
+
+        try {
+          const { name, power } = payload;
+          return await this.db.create({ name, power });
+        } catch (error) {
+          throw new Error(error);
+        }
+      },
+    };
+  }
 }
 
 module.exports = HeroRoutes;
