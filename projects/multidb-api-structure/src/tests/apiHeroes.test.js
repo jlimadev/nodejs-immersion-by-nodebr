@@ -9,7 +9,7 @@ describe.only('Test to api hereoes', () => {
     app = await api;
   });
 
-  describe.only('LIST | GET', () => {
+  describe('LIST | GET', () => {
     it('Should list the heroes using GET on /heroes', async () => {
       const result = await app.inject({
         method: 'GET',
@@ -74,7 +74,7 @@ describe.only('Test to api hereoes', () => {
     });
   });
 
-  describe.only('CREATE | POST', () => {
+  describe('CREATE | POST', () => {
     it('should create a new hero in database using POST method in /heroes', async () => {
       const result = await app.inject({
         method: 'POST',
