@@ -137,9 +137,8 @@ describe.only('Test to api hereoes', () => {
 
       assert.ok(statusCode === 400);
       assert.ok(statusMessage === 'Bad Request');
-      assert.deepStrictEqual(
-        error.message,
-        '"name" length must be at least 3 characters long',
+      assert.ok(
+        error.message === '"name" length must be at least 3 characters long',
       );
     });
 
@@ -156,9 +155,8 @@ describe.only('Test to api hereoes', () => {
 
       assert.ok(statusCode === 400);
       assert.ok(statusMessage === 'Bad Request');
-      assert.deepStrictEqual(
-        error.message,
-        '"power" length must be at least 3 characters long',
+      assert.ok(
+        error.message === '"power" length must be at least 3 characters long',
       );
     });
   });
