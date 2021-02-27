@@ -91,5 +91,37 @@ describe.only('Test to api hereoes', () => {
       assert.ok(statusMessage === 'OK');
       assert.deepStrictEqual(resultKeys, expectedKeys);
     });
+
+    it('Should return 400 bad request if create a hero without a name', async () => {
+      const result = await app.inject({
+        method: 'POST',
+        url: '/heroes',
+        payload: { power: 'Any Power' },
+      });
+
+      const {
+        result: { statusCode, statusMessage, error },
+      } = result;
+
+      assert.ok(statusCode === 400);
+      assert.ok(statusMessage === 'Bad Request');
+      assert.ok(error.message === '"name" is required');
+    });
+
+    it('Should return 400 bad request if create a hero without a power', async () => {
+      const result = await app.inject({
+        method: 'POST',
+        url: '/heroes',
+        payload: { name: 'Any' },
+      });
+
+      const {
+        result: { statusCode, statusMessage, error },
+      } = result;
+
+      assert.ok(statusCode === 400);
+      assert.ok(statusMessage === 'Bad Request');
+      assert.ok(error.message === '"power" is required');
+    });
   });
 });
