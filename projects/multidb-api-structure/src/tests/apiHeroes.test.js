@@ -59,7 +59,7 @@ describe.only('Test to api hereoes', () => {
     it('Should filter by name', async () => {
       const LIMIT = 10;
       const SKIP = 0;
-      const NAME = 'Ruru';
+      const NAME = 'Any';
       const result = await app.inject({
         method: 'GET',
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}&name=${NAME}`,
@@ -71,6 +71,25 @@ describe.only('Test to api hereoes', () => {
       assert.deepStrictEqual(data[0].name, NAME);
       assert.deepStrictEqual(statusCode, 200);
       assert.ok(Array.isArray(data));
+    });
+  });
+
+  describe.only('CREATE | POST', () => {
+    it('should create a new hero in database using POST method in /heroes', async () => {
+      const result = await app.inject({
+        method: 'POST',
+        url: '/heroes',
+        payload: MOCK_CREATE_HERO,
+      });
+
+      const { statusCode, statusMessage, payload } = result;
+
+      const resultKeys = Object.keys(JSON.parse(payload));
+      const expectedKeys = ['createdAt', 'name', 'power', '_id', '__v'];
+
+      assert.ok(statusCode === 200);
+      assert.ok(statusMessage === 'OK');
+      assert.deepStrictEqual(resultKeys, expectedKeys);
     });
   });
 });
