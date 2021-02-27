@@ -83,9 +83,12 @@ describe.only('Test to api hereoes', () => {
       });
 
       const { statusCode, statusMessage, payload } = result;
+      const payloadObject = JSON.parse(payload);
 
-      const resultKeys = Object.keys(JSON.parse(payload));
+      console.log('create _id', payloadObject._id);
+
       const expectedKeys = ['createdAt', 'name', 'power', '_id', '__v'];
+      const resultKeys = Object.keys(payloadObject);
 
       assert.ok(statusCode === 200);
       assert.ok(statusMessage === 'OK');
