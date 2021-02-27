@@ -123,5 +123,43 @@ describe.only('Test to api hereoes', () => {
       assert.ok(statusMessage === 'Bad Request');
       assert.ok(error.message === '"power" is required');
     });
+
+    it('Should return 400 bad request if create a hero with name with less than min size', async () => {
+      const result = await app.inject({
+        method: 'POST',
+        url: '/heroes',
+        payload: { name: 'A', power: 'Any Power' },
+      });
+
+      const {
+        result: { statusCode, statusMessage, error },
+      } = result;
+
+      assert.ok(statusCode === 400);
+      assert.ok(statusMessage === 'Bad Request');
+      assert.deepStrictEqual(
+        error.message,
+        '"name" length must be at least 3 characters long',
+      );
+    });
+
+    it('Should return 400 bad request if create a hero with power with less than min size', async () => {
+      const result = await app.inject({
+        method: 'POST',
+        url: '/heroes',
+        payload: { name: 'Any', power: 'A' },
+      });
+
+      const {
+        result: { statusCode, statusMessage, error },
+      } = result;
+
+      assert.ok(statusCode === 400);
+      assert.ok(statusMessage === 'Bad Request');
+      assert.deepStrictEqual(
+        error.message,
+        '"power" length must be at least 3 characters long',
+      );
+    });
   });
 });
