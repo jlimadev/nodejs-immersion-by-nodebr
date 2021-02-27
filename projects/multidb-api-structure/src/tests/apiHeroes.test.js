@@ -2,14 +2,15 @@ const assert = require('assert');
 const api = require('../api');
 
 let app = {};
+const MOCK_CREATE_HERO = { name: 'Any', power: 'Any Power' };
 
 describe.only('Test to api hereoes', () => {
   before(async () => {
     app = await api;
   });
 
-  describe('list', () => {
-    it('Should list the heroes on /heroes', async () => {
+  describe.only('LIST | GET', () => {
+    it('Should list the heroes using GET on /heroes', async () => {
       const result = await app.inject({
         method: 'GET',
         url: `/heroes`,
@@ -18,7 +19,7 @@ describe.only('Test to api hereoes', () => {
       const { statusCode, payload } = result;
       const data = JSON.parse(payload);
 
-      assert.strictEqual(statusCode, 200);
+      assert.ok(statusCode === 200);
       assert.ok(Array.isArray(data));
     });
 
@@ -33,12 +34,12 @@ describe.only('Test to api hereoes', () => {
       const { statusCode, payload } = result;
       const data = JSON.parse(payload);
 
-      assert.strictEqual(statusCode, 200);
+      assert.ok(statusCode === 200);
       assert.ok(Array.isArray(data));
       assert.ok(data.length <= LIMIT);
     });
 
-    it.only('Should fail if skip and limit if they invalid', async () => {
+    it('Should fail if skip and limit if they invalid', async () => {
       const LIMIT = 'ANYWRONG';
       const SKIP = 'ANYWRONG';
       const result = await app.inject({
@@ -49,9 +50,10 @@ describe.only('Test to api hereoes', () => {
       const {
         result: { statusCode, statusMessage, error },
       } = result;
-      assert.strictEqual(statusCode, 400);
-      assert.strictEqual(statusMessage, 'Bad Request');
-      assert.strictEqual(error.message, '"skip" must be a number');
+
+      assert.ok(statusCode === 400);
+      assert.deepStrictEqual(statusMessage, 'Bad Request');
+      assert.deepStrictEqual(error.message, '"skip" must be a number');
     });
 
     it('Should filter by name', async () => {
@@ -66,8 +68,8 @@ describe.only('Test to api hereoes', () => {
       const { statusCode, payload } = result;
       const data = JSON.parse(payload);
 
-      assert.strictEqual(data[0].name, NAME);
-      assert.strictEqual(statusCode, 200);
+      assert.deepStrictEqual(data[0].name, NAME);
+      assert.deepStrictEqual(statusCode, 200);
       assert.ok(Array.isArray(data));
     });
   });
