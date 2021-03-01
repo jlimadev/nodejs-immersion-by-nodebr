@@ -2,7 +2,12 @@ const assert = require('assert');
 const api = require('../api');
 
 let app = {};
-const MOCK_CREATE_HERO = { name: 'Any', power: 'Any Power' };
+let refUUID = '';
+
+const MOCK_CREATE_HERO = {
+  name: 'Any Name',
+  power: 'Any Power',
+};
 
 describe.only('Test to api hereoes', () => {
   before(async () => {
@@ -85,6 +90,7 @@ describe.only('Test to api hereoes', () => {
       const { statusCode, statusMessage, payload } = result;
       const payloadObject = JSON.parse(payload);
 
+      refUUID = payloadObject._id;
       console.log('create _id', payloadObject._id);
 
       const expectedKeys = ['createdAt', 'name', 'power', '_id', '__v'];
@@ -162,5 +168,28 @@ describe.only('Test to api hereoes', () => {
         error.message === '"power" length must be at least 3 characters long',
       );
     });
+  });
+
+  describe('UPDATE | PATCH', () => {
+    it('Should update the hero power using the PATCH method in /heroes', async () => {
+      const _id = refUUID;
+      const patchObject = { power: 'Any Updated Power' };
+      const result = await app.inject({
+        method: 'PATCH',
+        url: `/heroes/${_id}`,
+        payload: patchObject,
+      });
+
+      const { statusCode, statusMessage, payload } = result;
+      const payloadObject = JSON.parse(payload);
+
+      console.log('payload', payloadObject);
+
+      assert.ok(statusCode === 200);
+      assert.ok(statusMessage === 'OK');
+    });
+    // it('Should return 400 bad request if update a hero without sending an ID', async () => {});
+    // it('Should return 400 bad request if update a hero with a invalid name size', async () => {});
+    // it('Should return 400 bad request if update a hero with a invalid power size', async () => {});
   });
 });
