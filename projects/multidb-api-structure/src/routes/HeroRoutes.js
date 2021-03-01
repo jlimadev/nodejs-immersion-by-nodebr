@@ -120,6 +120,39 @@ class HeroRoutes extends BaseRoute {
       },
     };
   }
+
+  delete() {
+    return {
+      method: 'DELETE',
+      path: '/heroes/{id?}',
+      handler: async (req, res) => {
+        const { params } = req;
+        const schema = Joi.object({
+          id: Joi.string().guid(),
+        });
+
+        const validation = schema.validate(params);
+
+        if (validation.error) {
+          const statusCode = 400;
+          const errorMessage = validation.error;
+          const error = {
+            statusCode,
+            statusMessage: 'Bad Request',
+            error: { message: errorMessage },
+          };
+          return res.response(error).code(statusCode);
+        }
+
+        try {
+          const { id } = params;
+          return await this.db.delete(id);
+        } catch (error) {
+          throw new Error(error);
+        }
+      },
+    };
+  }
 }
 
 module.exports = HeroRoutes;

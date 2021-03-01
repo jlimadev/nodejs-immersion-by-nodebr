@@ -105,7 +105,7 @@ describe.only('Test to api hereoes', () => {
     });
   });
 
-  describe('LIST | GET', () => {
+  describe('READ | GET', () => {
     it('Should list the heroes using GET on /heroes', async () => {
       const result = await app.inject({
         method: 'GET',
@@ -174,6 +174,8 @@ describe.only('Test to api hereoes', () => {
     it('Should update the hero power using the PATCH method in /heroes', async () => {
       const _id = refUUID;
       const patchObject = { power: 'Any Updated Power' };
+      const expectedPayloadObject = { n: 1, nModified: 1, ok: 1 };
+
       const result = await app.inject({
         method: 'PATCH',
         url: `/heroes/${_id}`,
@@ -181,7 +183,6 @@ describe.only('Test to api hereoes', () => {
       });
 
       const { statusCode, statusMessage, payload } = result;
-      const expectedPayloadObject = { n: 1, nModified: 1, ok: 1 };
       const payloadObject = JSON.parse(payload);
 
       assert.ok(statusCode === 200);
@@ -259,6 +260,25 @@ describe.only('Test to api hereoes', () => {
         error.message ===
           '"power" length must be less than or equal to 100 characters long',
       );
+    });
+  });
+
+  describe('DELETE | DELETE', () => {
+    it('Should delete a hero by ID using DELETE method', async () => {
+      const _id = refUUID;
+      const result = await app.inject({
+        method: 'DELETE',
+        url: `/heroes/${_id}`,
+      });
+
+      const expectedPayloadObject = { n: 1, ok: 1, deletedCount: 1 };
+
+      const { statusCode, statusMessage, payload } = result;
+      const payloadObject = JSON.parse(payload);
+
+      assert.ok(statusCode === 200);
+      assert.ok(statusMessage === 'OK');
+      assert.deepStrictEqual(payloadObject, expectedPayloadObject);
     });
   });
 });
