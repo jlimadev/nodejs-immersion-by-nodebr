@@ -204,8 +204,26 @@ describe.only('Test to api hereoes', () => {
       assert.ok(statusMessage === 'Bad Request');
       assert.ok(error.message === '"id" is required');
     });
+
+    it.only('Should return 400 bad request if update a hero with a invalid name size', async () => {
+      const _id = 'any test id';
+      const patchObject = { name: 'A' };
+      const result = await app.inject({
+        method: 'PATCH',
+        url: `/heroes/${_id}`,
+        payload: patchObject,
+      });
+
+      const payloadObject = JSON.parse(result.payload);
+      const { statusCode, statusMessage, error } = payloadObject;
+
+      assert.ok(statusCode === 400);
+      assert.ok(statusMessage === 'Bad Request');
+      assert.ok(
+        error.message === '"name" length must be at least 3 characters long',
+      );
+    });
   });
-  // it('Should return 400 bad request if update a hero with a invalid name size', async () => {});
   // it('Should return 400 bad request if update a hero with a invalid power size', async () => {});
   // });
 });
