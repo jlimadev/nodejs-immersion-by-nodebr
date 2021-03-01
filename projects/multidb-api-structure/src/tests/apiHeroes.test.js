@@ -61,10 +61,10 @@ describe.only('Test to api hereoes', () => {
       assert.deepStrictEqual(error.message, '"skip" must be a number');
     });
 
-    it('Should filter by name', async () => {
+    it.only('Should filter by name', async () => {
       const LIMIT = 10;
       const SKIP = 0;
-      const NAME = 'Any';
+      const NAME = 'Any Name';
       const result = await app.inject({
         method: 'GET',
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}&name=${NAME}`,
