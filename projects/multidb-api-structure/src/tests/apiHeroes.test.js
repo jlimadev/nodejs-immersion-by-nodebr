@@ -281,9 +281,20 @@ describe.only('Test to api hereoes', () => {
       assert.deepStrictEqual(payloadObject, expectedPayloadObject);
     });
 
-    it.only('Should delete all if id is not present', async () => {
+    it('Should delete all if id is not present', async () => {
       const createHeroes = Array(10).fill(MOCK_CREATE_HERO);
 
+      /* With async map */
+      const promises = createHeroes.map(async (hero) => {
+        return await app.inject({
+          method: 'POST',
+          url: '/heroes',
+          payload: hero,
+        });
+      });
+      await Promise.all(promises);
+
+      /* With async foreach */
       createHeroes.forEach(async (hero) => {
         await app.inject({
           method: 'POST',
@@ -297,7 +308,7 @@ describe.only('Test to api hereoes', () => {
         url: `/heroes`,
       });
 
-      const expectedPayloadObject = { n: 10, ok: 1, deletedCount: 10 };
+      const expectedPayloadObject = { n: 20, ok: 1, deletedCount: 20 };
 
       const { statusCode, statusMessage, payload } = result;
       const payloadObject = JSON.parse(payload);
