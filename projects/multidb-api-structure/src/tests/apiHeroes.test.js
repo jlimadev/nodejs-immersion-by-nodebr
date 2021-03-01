@@ -186,7 +186,24 @@ describe.only('Test to api hereoes', () => {
 
       assert.ok(statusCode === 200);
       assert.ok(statusMessage === 'OK');
-      assert.ok(payloadObject, expectedPayloadObject);
+      assert.deepStrictEqual(payloadObject, expectedPayloadObject);
+    });
+
+    it('Should not update the hero with an unused id', async () => {
+      const patchObject = { power: 'Any Updated Power' };
+      const result = await app.inject({
+        method: 'PATCH',
+        url: `/heroes/invalidId`,
+        payload: patchObject,
+      });
+
+      const { statusCode, statusMessage, payload } = result;
+      const expectedPayloadObject = { n: 0, nModified: 0, ok: 1 };
+      const payloadObject = JSON.parse(payload);
+
+      assert.ok(statusCode === 200);
+      assert.ok(statusMessage === 'OK');
+      assert.deepStrictEqual(payloadObject, expectedPayloadObject);
     });
 
     it('Should return 400 bad request if update a hero without sending an ID', async () => {
