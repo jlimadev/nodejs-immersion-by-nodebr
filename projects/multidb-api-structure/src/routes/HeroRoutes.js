@@ -79,18 +79,17 @@ class HeroRoutes extends BaseRoute {
 
   update() {
     return {
-      path: '/heroes/{id}',
       method: 'PATCH',
+      path: '/heroes/{id?}',
       handler: async (req, res) => {
         const { payload, params } = req;
-
         const payloadSchema = Joi.object({
           name: Joi.string().min(3).max(100),
           power: Joi.string().min(3).max(100),
         });
 
         const paramsSchema = Joi.object({
-          id: Joi.string().required(),
+          id: Joi.string().required().min(3),
         });
 
         const payloadValidation = payloadSchema.validate(payload);

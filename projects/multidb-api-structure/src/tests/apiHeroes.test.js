@@ -188,8 +188,24 @@ describe.only('Test to api hereoes', () => {
       assert.ok(statusCode === 200);
       assert.ok(statusMessage === 'OK');
     });
-    // it('Should return 400 bad request if update a hero without sending an ID', async () => {});
-    // it('Should return 400 bad request if update a hero with a invalid name size', async () => {});
-    // it('Should return 400 bad request if update a hero with a invalid power size', async () => {});
+
+    it('Should return 400 bad request if update a hero without sending an ID', async () => {
+      const patchObject = { power: 'Any Updated Power' };
+      const result = await app.inject({
+        method: 'PATCH',
+        url: '/heroes',
+        payload: patchObject,
+      });
+
+      const payloadObject = JSON.parse(result.payload);
+      const { statusCode, statusMessage, error } = payloadObject;
+
+      assert.ok(statusCode === 400);
+      assert.ok(statusMessage === 'Bad Request');
+      assert.ok(error.message === '"id" is required');
+    });
   });
+  // it('Should return 400 bad request if update a hero with a invalid name size', async () => {});
+  // it('Should return 400 bad request if update a hero with a invalid power size', async () => {});
+  // });
 });
