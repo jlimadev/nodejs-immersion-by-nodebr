@@ -34,7 +34,6 @@ class HeroRoutes extends BaseRoute {
 
         try {
           const { name, skip, limit } = validation.value;
-          console.log(validation.value);
           const search = name ? { name: { $regex: `.*${name}*.` } } : {};
           return this.db.read(search, skip, limit);
         } catch (error) {

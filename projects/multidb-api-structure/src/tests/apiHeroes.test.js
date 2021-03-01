@@ -181,12 +181,12 @@ describe.only('Test to api hereoes', () => {
       });
 
       const { statusCode, statusMessage, payload } = result;
+      const expectedPayloadObject = { n: 1, nModified: 1, ok: 1 };
       const payloadObject = JSON.parse(payload);
-
-      console.log('payload', payloadObject);
 
       assert.ok(statusCode === 200);
       assert.ok(statusMessage === 'OK');
+      assert.ok(payloadObject, expectedPayloadObject);
     });
 
     it('Should return 400 bad request if update a hero without sending an ID', async () => {
