@@ -135,7 +135,7 @@ class HeroRoutes extends BaseRoute {
 
         if (validation.error) {
           const statusCode = 400;
-          const errorMessage = validation.error;
+          const errorMessage = validation.error.details[0].message;
           const error = {
             statusCode,
             statusMessage: 'Bad Request',

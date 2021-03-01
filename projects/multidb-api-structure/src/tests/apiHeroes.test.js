@@ -280,5 +280,36 @@ describe.only('Test to api hereoes', () => {
       assert.ok(statusMessage === 'OK');
       assert.deepStrictEqual(payloadObject, expectedPayloadObject);
     });
+
+    it('Should delete all if id is not present', async () => {
+      const result = await app.inject({
+        method: 'DELETE',
+        url: `/heroes`,
+      });
+
+      const expectedPayloadObject = { n: 0, ok: 1, deletedCount: 0 };
+
+      const { statusCode, statusMessage, payload } = result;
+      const payloadObject = JSON.parse(payload);
+
+      assert.ok(statusCode === 200);
+      assert.ok(statusMessage === 'OK');
+      assert.deepStrictEqual(payloadObject, expectedPayloadObject);
+    });
+
+    it('Should fail when delete a hero with invalid UUID', async () => {
+      const _id = 'refUUID';
+      const result = await app.inject({
+        method: 'DELETE',
+        url: `/heroes/${_id}`,
+      });
+
+      const payloadObject = JSON.parse(result.payload);
+      const { statusCode, statusMessage, error } = payloadObject;
+
+      assert.ok(statusCode === 400);
+      assert.ok(statusMessage === 'Bad Request');
+      assert.deepStrictEqual(error.message, '"id" must be a valid GUID');
+    });
   });
 });
