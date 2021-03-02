@@ -43,13 +43,12 @@ describe.only('Test to api hereoes', () => {
         payload: { power: 'Any Power' },
       });
 
-      const {
-        result: { statusCode, statusMessage, error },
-      } = result;
+      const payloadObject = JSON.parse(result.payload);
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.ok(statusMessage === 'Bad Request');
-      assert.ok(error.message === '"name" is required');
+      assert.ok(error === 'Bad Request');
+      assert.ok(message === '"name" is required');
     });
 
     it('Should return 400 bad request if create a hero without a power', async () => {
@@ -59,13 +58,12 @@ describe.only('Test to api hereoes', () => {
         payload: { name: 'Any' },
       });
 
-      const {
-        result: { statusCode, statusMessage, error },
-      } = result;
+      const payloadObject = JSON.parse(result.payload);
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.ok(statusMessage === 'Bad Request');
-      assert.ok(error.message === '"power" is required');
+      assert.ok(error === 'Bad Request');
+      assert.ok(message === '"power" is required');
     });
 
     it('Should return 400 bad request if create a hero with name with less than min size', async () => {
@@ -75,15 +73,12 @@ describe.only('Test to api hereoes', () => {
         payload: { name: 'A', power: 'Any Power' },
       });
 
-      const {
-        result: { statusCode, statusMessage, error },
-      } = result;
+      const payloadObject = JSON.parse(result.payload);
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.ok(statusMessage === 'Bad Request');
-      assert.ok(
-        error.message === '"name" length must be at least 3 characters long',
-      );
+      assert.ok(error === 'Bad Request');
+      assert.ok(message === '"name" length must be at least 3 characters long');
     });
 
     it('Should return 400 bad request if create a hero with power with less than min size', async () => {
@@ -93,14 +88,13 @@ describe.only('Test to api hereoes', () => {
         payload: { name: 'Any', power: 'A' },
       });
 
-      const {
-        result: { statusCode, statusMessage, error },
-      } = result;
+      const payloadObject = JSON.parse(result.payload);
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.ok(statusMessage === 'Bad Request');
+      assert.ok(error === 'Bad Request');
       assert.ok(
-        error.message === '"power" length must be at least 3 characters long',
+        message === '"power" length must be at least 3 characters long',
       );
     });
   });

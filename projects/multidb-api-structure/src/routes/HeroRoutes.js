@@ -21,7 +21,7 @@ class HeroRoutes extends BaseRoute {
             limit: Joi.number().default(10),
             name: Joi.string().min(3).max(100),
           }),
-          failAction: (_, _, error) => {
+          failAction: (req, res, error) => {
             throw error;
           },
         },
@@ -43,32 +43,28 @@ class HeroRoutes extends BaseRoute {
     return {
       path: '/heroes',
       method: 'POST',
-      handler: async (req, res) => {
-        const { payload } = req;
-
-        const schema = Joi.object({
-          name: Joi.string().required().min(3).max(100),
-          power: Joi.string().required().min(3).max(100),
-        });
-
-        const validation = schema.validate(payload);
-
-        if (validation.error) {
-          const statusCode = 400;
-          const error = {
-            statusCode,
-            statusMessage: 'Bad Request',
-            error: { message: validation.error.details[0].message },
-          };
-          return res.response(error).code(statusCode);
-        }
-
-        try {
-          const { name, power } = payload;
-          return await this.db.create({ name, power });
-        } catch (error) {
-          throw new Error(error);
-        }
+      options: {
+        tags: ['api'],
+        description: 'create a hero',
+        notes: 'creates a hero on database',
+        validate: {
+          payload: Joi.object({
+            name: Joi.string().required().min(3).max(100),
+            power: Joi.string().required().min(3).max(100),
+          }),
+          failAction: (req, res, error) => {
+            throw error;
+          },
+        },
+        handler: async (req, res) => {
+          const { payload } = req;
+          try {
+            const { name, power } = payload;
+            return await this.db.create({ name, power });
+          } catch (error) {
+            throw new Error(error);
+          }
+        },
       },
     };
   }
