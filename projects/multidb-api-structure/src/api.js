@@ -2,11 +2,14 @@ const Context = require('./db/strategies/base/contextStrategy');
 const MongoDB = require('./db/strategies/mongodb/mongodb');
 const schema = require('./db/strategies/mongodb/schemas/heroesSchema');
 const HeroRoutes = require('./routes/HeroRoutes');
+const AuthRoutes = require('./routes/AuthRoutes');
 
 const Hapi = require('@hapi/hapi');
 const Vision = require('@hapi/vision');
 const Inert = require('@hapi/inert');
 const HapiSwagger = require('hapi-swagger');
+
+const JWT_SECRET = 'SUPERBIGSECRET';
 
 const app = new Hapi.Server({
   port: 5000,
@@ -37,7 +40,10 @@ const main = async () => {
       },
     ]);
 
-    app.route(mapRoutes(new HeroRoutes(context), HeroRoutes.methods()));
+    app.route([
+      ...mapRoutes(new HeroRoutes(context), HeroRoutes.methods()),
+      ...mapRoutes(new AuthRoutes(JWT_SECRET), AuthRoutes.methods()),
+    ]);
 
     await app.start();
     console.log(`server running on ${app.info.port}`);
