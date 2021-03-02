@@ -4,9 +4,9 @@ const schema = require('./db/strategies/mongodb/schemas/heroesSchema');
 const HeroRoutes = require('./routes/HeroRoutes');
 
 const Hapi = require('@hapi/hapi');
-const HapiSwagger = require('hapi-swagger');
 const Vision = require('@hapi/vision');
 const Inert = require('@hapi/inert');
+const HapiSwagger = require('hapi-swagger');
 
 const app = new Hapi.Server({
   port: 5000,

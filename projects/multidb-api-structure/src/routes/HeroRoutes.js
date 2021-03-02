@@ -1,5 +1,5 @@
 const BaseRoute = require('./base/BaseRoute');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 class HeroRoutes extends BaseRoute {
   constructor(db) {
