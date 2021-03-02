@@ -143,13 +143,12 @@ describe.only('Test to api hereoes', () => {
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}`,
       });
 
-      const {
-        result: { statusCode, statusMessage, error },
-      } = result;
+      const payloadObject = JSON.parse(result.payload);
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.deepStrictEqual(statusMessage, 'Bad Request');
-      assert.deepStrictEqual(error.message, '"skip" must be a number');
+      assert.deepStrictEqual(error, 'Bad Request');
+      assert.deepStrictEqual(message, '"skip" must be a number');
     });
 
     it('Should filter by name', async () => {

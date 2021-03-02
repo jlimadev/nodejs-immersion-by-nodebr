@@ -13,29 +13,22 @@ class HeroRoutes extends BaseRoute {
       method: 'GET',
       options: {
         tags: ['api'],
-        handler: (req, res) => {
-          const { query } = req;
-
-          const schema = Joi.object({
+        description: 'list all heroes',
+        notes: 'returns heroes from database',
+        validate: {
+          query: Joi.object({
             skip: Joi.number().default(0),
             limit: Joi.number().default(10),
             name: Joi.string().min(3).max(100),
-          });
-
-          const validation = schema.validate(query);
-
-          if (validation.error) {
-            const statusCode = 400;
-            const error = {
-              statusCode: 400,
-              statusMessage: 'Bad Request',
-              error: { message: validation.error.details[0].message },
-            };
-            return res.response(error).code(statusCode);
-          }
-
+          }),
+          failAction: (_, _, error) => {
+            throw error;
+          },
+        },
+        handler: (req, res) => {
+          const { query } = req;
           try {
-            const { name, skip, limit } = validation.value;
+            const { name, skip, limit } = query;
             const search = name ? { name: { $regex: `.*${name}*.` } } : {};
             return this.db.read(search, skip, limit);
           } catch (error) {
