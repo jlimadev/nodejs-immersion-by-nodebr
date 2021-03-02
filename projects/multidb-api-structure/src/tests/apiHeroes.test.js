@@ -317,11 +317,11 @@ describe.only('Test to api hereoes', () => {
       });
 
       const payloadObject = JSON.parse(result.payload);
-      const { statusCode, statusMessage, error } = payloadObject;
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.ok(statusMessage === 'Bad Request');
-      assert.deepStrictEqual(error.message, '"id" must be a valid GUID');
+      assert.ok(error === 'Bad Request');
+      assert.deepStrictEqual(message, '"id" must be a valid GUID');
     });
   });
 });

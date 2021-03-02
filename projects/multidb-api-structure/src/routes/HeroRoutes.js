@@ -110,31 +110,27 @@ class HeroRoutes extends BaseRoute {
     return {
       method: 'DELETE',
       path: '/heroes/{id?}',
-      handler: async (req, res) => {
-        const { params } = req;
-        const schema = Joi.object({
-          id: Joi.string().guid(),
-        });
-
-        const validation = schema.validate(params);
-
-        if (validation.error) {
-          const statusCode = 400;
-          const errorMessage = validation.error.details[0].message;
-          const error = {
-            statusCode,
-            statusMessage: 'Bad Request',
-            error: { message: errorMessage },
-          };
-          return res.response(error).code(statusCode);
-        }
-
-        try {
-          const { id } = params;
-          return await this.db.delete(id);
-        } catch (error) {
-          throw new Error(error);
-        }
+      options: {
+        tags: ['api'],
+        description: 'delete one hero by ID or all heroes (when no ID)',
+        notes: 'delete one hero by ID or all heroes (when no ID) on database',
+        validate: {
+          params: Joi.object({
+            id: Joi.string().guid(),
+          }),
+          failAction: (req, res, error) => {
+            throw error;
+          },
+        },
+        handler: async (req, res) => {
+          const { params } = req;
+          try {
+            const { id } = params;
+            return await this.db.delete(id);
+          } catch (error) {
+            throw new Error(error);
+          }
+        },
       },
     };
   }
