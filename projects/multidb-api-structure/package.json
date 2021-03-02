@@ -8,11 +8,11 @@
     "test:watch": "mocha ./src/tests/*.test.js -w"
   },
   "dependencies": {
-    "@hapi/inert": "^6.0.3",
-    "@hapi/vision": "^6.0.1",
     "@hapi/hapi": "^19.0.0",
+    "@hapi/inert": "^6.0.3",
+    "@hapi/joi": "^17.1.1",
+    "@hapi/vision": "^6.0.1",
     "hapi-swagger": "^14.1.0",
-    "joi": "^17.4.0",
     "mongoose": "^5.11.15",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",

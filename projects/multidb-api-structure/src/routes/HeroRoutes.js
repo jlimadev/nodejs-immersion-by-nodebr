@@ -1,5 +1,5 @@
 const BaseRoute = require('./base/BaseRoute');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 class HeroRoutes extends BaseRoute {
   constructor(db) {
@@ -11,34 +11,37 @@ class HeroRoutes extends BaseRoute {
     return {
       path: '/heroes',
       method: 'GET',
-      handler: (req, res) => {
-        const { query } = req;
+      options: {
+        tags: ['api'],
+        handler: (req, res) => {
+          const { query } = req;
 
-        const schema = Joi.object({
-          skip: Joi.number().default(0),
-          limit: Joi.number().default(10),
-          name: Joi.string().min(3).max(100),
-        });
+          const schema = Joi.object({
+            skip: Joi.number().default(0),
+            limit: Joi.number().default(10),
+            name: Joi.string().min(3).max(100),
+          });
 
-        const validation = schema.validate(query);
+          const validation = schema.validate(query);
 
-        if (validation.error) {
-          const statusCode = 400;
-          const error = {
-            statusCode: 400,
-            statusMessage: 'Bad Request',
-            error: { message: validation.error.details[0].message },
-          };
-          return res.response(error).code(statusCode);
-        }
+          if (validation.error) {
+            const statusCode = 400;
+            const error = {
+              statusCode: 400,
+              statusMessage: 'Bad Request',
+              error: { message: validation.error.details[0].message },
+            };
+            return res.response(error).code(statusCode);
+          }
 
-        try {
-          const { name, skip, limit } = validation.value;
-          const search = name ? { name: { $regex: `.*${name}*.` } } : {};
-          return this.db.read(search, skip, limit);
-        } catch (error) {
-          throw new Error(error);
-        }
+          try {
+            const { name, skip, limit } = validation.value;
+            const search = name ? { name: { $regex: `.*${name}*.` } } : {};
+            return this.db.read(search, skip, limit);
+          } catch (error) {
+            throw new Error(error);
+          }
+        },
       },
     };
   }
