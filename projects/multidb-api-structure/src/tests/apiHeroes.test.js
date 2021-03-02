@@ -209,11 +209,11 @@ describe.only('Test to api hereoes', () => {
       });
 
       const payloadObject = JSON.parse(result.payload);
-      const { statusCode, statusMessage, error } = payloadObject;
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.ok(statusMessage === 'Bad Request');
-      assert.ok(error.message === '"id" is required');
+      assert.ok(error === 'Bad Request');
+      assert.ok(message === '"id" is required');
     });
 
     it('Should return 400 bad request if update a hero with a invalid name size', async () => {
@@ -226,13 +226,11 @@ describe.only('Test to api hereoes', () => {
       });
 
       const payloadObject = JSON.parse(result.payload);
-      const { statusCode, statusMessage, error } = payloadObject;
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.ok(statusMessage === 'Bad Request');
-      assert.ok(
-        error.message === '"name" length must be at least 3 characters long',
-      );
+      assert.ok(error === 'Bad Request');
+      assert.ok(message === '"name" length must be at least 3 characters long');
     });
 
     it('Should return 400 bad request if update a hero with a invalid power size', async () => {
@@ -245,12 +243,12 @@ describe.only('Test to api hereoes', () => {
       });
 
       const payloadObject = JSON.parse(result.payload);
-      const { statusCode, statusMessage, error } = payloadObject;
+      const { statusCode, error, message } = payloadObject;
 
       assert.ok(statusCode === 400);
-      assert.ok(statusMessage === 'Bad Request');
+      assert.ok(error === 'Bad Request');
       assert.ok(
-        error.message ===
+        message ===
           '"power" length must be less than or equal to 100 characters long',
       );
     });

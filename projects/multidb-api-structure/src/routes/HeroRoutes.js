@@ -73,42 +73,35 @@ class HeroRoutes extends BaseRoute {
     return {
       method: 'PATCH',
       path: '/heroes/{id?}',
-      handler: async (req, res) => {
-        const { payload, params } = req;
-        const payloadSchema = Joi.object({
-          name: Joi.string().min(3).max(100),
-          power: Joi.string().min(3).max(100),
-        });
+      options: {
+        tags: ['api'],
+        description: 'update a hero by id',
+        notes: 'update a hero on database based on an ID',
+        validate: {
+          params: Joi.object({
+            id: Joi.string().required().min(3),
+          }),
+          payload: Joi.object({
+            name: Joi.string().min(3).max(100),
+            power: Joi.string().min(3).max(100),
+          }),
+          failAction: (req, res, error) => {
+            throw error;
+          },
+        },
+        handler: async (req, res) => {
+          const { payload, params } = req;
 
-        const paramsSchema = Joi.object({
-          id: Joi.string().required().min(3),
-        });
+          try {
+            const { id } = params;
+            const strPayload = JSON.stringify(payload);
+            const patchData = JSON.parse(strPayload);
 
-        const payloadValidation = payloadSchema.validate(payload);
-        const paramsValidation = paramsSchema.validate(params);
-
-        if (payloadValidation.error || paramsValidation.error) {
-          const statusCode = 400;
-          const errorMessage = paramsValidation.error
-            ? paramsValidation.error.details[0].message
-            : payloadValidation.error.details[0].message;
-          const error = {
-            statusCode,
-            statusMessage: 'Bad Request',
-            error: { message: errorMessage },
-          };
-          return res.response(error).code(statusCode);
-        }
-
-        try {
-          const { id } = params;
-          const strPayload = JSON.stringify(payload);
-          const patchData = JSON.parse(strPayload);
-
-          return await this.db.update(id, patchData);
-        } catch (error) {
-          throw new Error(error);
-        }
+            return await this.db.update(id, patchData);
+          } catch (error) {
+            throw new Error(error);
+          }
+        },
       },
     };
   }
