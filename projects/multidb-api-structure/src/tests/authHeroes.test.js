@@ -1,9 +1,8 @@
 const assert = require('assert');
 const api = require('../api');
 let app = {};
-let GENERATED_TOKEN = '';
 
-describe.only('Auth test suit', () => {
+describe('Auth test suit', () => {
   before(async () => {
     app = await api;
   });
