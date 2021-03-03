@@ -359,4 +359,20 @@ describe.only('Test to api hereoes', () => {
       assert.deepStrictEqual(message, '"id" must be a valid GUID');
     });
   });
+
+  describe('UNAUTHORIZED CASE', () => {
+    it('Should return unathorized if try to do any request without a token', async () => {
+      const result = await app.inject({
+        method: 'GET',
+        url: '/heroes',
+      });
+
+      const payload = JSON.parse(result.payload);
+      const { statusCode, error, message } = payload;
+
+      assert.ok(statusCode === 401);
+      assert.ok(error === 'Unauthorized');
+      assert.strictEqual(message, 'Missing authentication');
+    });
+  });
 });
