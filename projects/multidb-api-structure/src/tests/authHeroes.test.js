@@ -7,7 +7,7 @@ describe.only('Auth test suit', () => {
     app = await api;
   });
 
-  it('should get a token', async () => {
+  it('should get a token when use the correct credentials', async () => {
     const result = await app.inject({
       method: 'POST',
       url: '/login',
@@ -22,5 +22,23 @@ describe.only('Auth test suit', () => {
 
     assert.ok(statusCode === 200);
     assert.ok(data.token.length > 10);
+  });
+
+  it('should not get a token when use the incorrect credentials', async () => {
+    const result = await app.inject({
+      method: 'POST',
+      url: '/login',
+      payload: {
+        username: 'invalid',
+        password: 'invalid',
+      },
+    });
+
+    const payloadObject = JSON.parse(result.payload);
+    const { statusCode, error, message } = payloadObject;
+
+    assert.ok(statusCode === 401);
+    assert.ok(error === 'Unauthorized');
+    assert.deepStrictEqual(message, 'Invalid username or password');
   });
 });
