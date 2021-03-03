@@ -1,15 +1,21 @@
-# Multi Database Project
+# API with a multi-database strategy
 
-Course based project - using Strategy Design Pattern to implement this multi-database project and mocha/chai to test.
+Using Strategy Design Pattern to implement a multi-database project and mocha/chai to test.
 
-For this project you can Postgres or MongoDB, but if you want to add any other database, feel free to do it.
+The API was made with `@hapi/hapi` and dynamic validation with `Joi`.
+
+To generate the swagger page i've used the plugins `hapi-swagger`, `@hapi/inert` and `@hapi/vision`.
+
+And last but not least, the JWT token authentication. This authentication was built with two libs: `hapi-auth-jwt2` as plugin and `jsonwebtoken` to generate/validate the token.
+
+For this project you can use Postgres or MongoDB, but if you want to add any other database, feel free to do it.
 
 ## Strategy Design Pattern
 
 In this repository we use the Strategy Design Pattern to deal with multi-database
 
-- For Postgres database we used the Sequelize
-- For MongoDB database we used Mongoose
+- For Postgres database we used the `Sequelize`
+- For MongoDB database we used `Mongoose`
 
 ## Docker
 
