@@ -8,6 +8,7 @@ const Hapi = require('@hapi/hapi');
 const Vision = require('@hapi/vision');
 const Inert = require('@hapi/inert');
 const HapiSwagger = require('hapi-swagger');
+const HapiAuthJWT = require('hapi-auth-jwt2');
 
 const JWT_SECRET = 'SUPERBIGSECRET';
 
@@ -32,6 +33,7 @@ const main = async () => {
     };
 
     await app.register([
+      HapiAuthJWT,
       Inert,
       Vision,
       {
@@ -40,6 +42,19 @@ const main = async () => {
       },
     ]);
 
+    app.auth.strategy('jwt', 'jwt', {
+      key: JWT_SECRET,
+      options: {
+        expiresIn: 3600,
+      },
+      validate: (data, request) => {
+        return {
+          isValid: true,
+        };
+      },
+    });
+
+    app.auth.default('jwt');
     app.route([
       ...mapRoutes(new HeroRoutes(context), HeroRoutes.methods()),
       ...mapRoutes(new AuthRoutes(JWT_SECRET), AuthRoutes.methods()),

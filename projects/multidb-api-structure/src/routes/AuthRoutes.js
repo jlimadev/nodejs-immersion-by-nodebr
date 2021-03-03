@@ -22,6 +22,7 @@ class AuthRoutes extends BaseRoute {
       method: 'POST',
       path: '/login',
       options: {
+        auth: false,
         tags: ['api'],
         description: 'Get JWT Token',
         notes: 'Endpoint to login into application',
