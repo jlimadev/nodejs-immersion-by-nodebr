@@ -1,8 +1,11 @@
 const assert = require('assert');
 const api = require('../api');
-
 let app = {};
 let refUUID = '';
+
+const headers = {
+  Authorization: '',
+};
 
 const MOCK_CREATE_HERO = {
   name: 'Any Name',
@@ -12,6 +15,19 @@ const MOCK_CREATE_HERO = {
 describe.only('Test to api hereoes', () => {
   before(async () => {
     app = await api;
+
+    //get token
+    const result = await app.inject({
+      method: 'POST',
+      url: '/login',
+      payload: {
+        username: 'anyusername',
+        password: 'anypassword',
+      },
+    });
+
+    const data = JSON.parse(result.payload);
+    headers.Authorization = data.token;
   });
 
   describe('CREATE | POST', () => {
@@ -19,6 +35,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'POST',
         url: '/heroes',
+        headers,
         payload: MOCK_CREATE_HERO,
       });
 
@@ -40,6 +57,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'POST',
         url: '/heroes',
+        headers,
         payload: { power: 'Any Power' },
       });
 
@@ -55,6 +73,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'POST',
         url: '/heroes',
+        headers,
         payload: { name: 'Any' },
       });
 
@@ -70,6 +89,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'POST',
         url: '/heroes',
+        headers,
         payload: { name: 'A', power: 'Any Power' },
       });
 
@@ -85,6 +105,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'POST',
         url: '/heroes',
+        headers,
         payload: { name: 'Any', power: 'A' },
       });
 
@@ -103,6 +124,7 @@ describe.only('Test to api hereoes', () => {
     it('Should list the heroes using GET on /heroes', async () => {
       const result = await app.inject({
         method: 'GET',
+        headers,
         url: `/heroes`,
       });
 
@@ -119,6 +141,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'GET',
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}`,
+        headers,
       });
 
       const { statusCode, payload } = result;
@@ -135,6 +158,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'GET',
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}`,
+        headers,
       });
 
       const payloadObject = JSON.parse(result.payload);
@@ -152,6 +176,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'GET',
         url: `/heroes?skip=${SKIP}&limit=${LIMIT}&name=${NAME}`,
+        headers,
       });
 
       const { statusCode, payload } = result;
@@ -172,6 +197,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'PATCH',
         url: `/heroes/${_id}`,
+        headers,
         payload: patchObject,
       });
 
@@ -188,6 +214,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'PATCH',
         url: `/heroes/invalidId`,
+        headers,
         payload: patchObject,
       });
 
@@ -205,6 +232,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'PATCH',
         url: '/heroes',
+        headers,
         payload: patchObject,
       });
 
@@ -222,6 +250,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'PATCH',
         url: `/heroes/${_id}`,
+        headers,
         payload: patchObject,
       });
 
@@ -239,6 +268,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'PATCH',
         url: `/heroes/${_id}`,
+        headers,
         payload: patchObject,
       });
 
@@ -260,6 +290,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'DELETE',
         url: `/heroes/${_id}`,
+        headers,
       });
 
       const expectedPayloadObject = { n: 1, ok: 1, deletedCount: 1 };
@@ -280,6 +311,7 @@ describe.only('Test to api hereoes', () => {
         return await app.inject({
           method: 'POST',
           url: '/heroes',
+          headers,
           payload: hero,
         });
       });
@@ -290,6 +322,7 @@ describe.only('Test to api hereoes', () => {
         await app.inject({
           method: 'POST',
           url: '/heroes',
+          headers,
           payload: hero,
         });
       });
@@ -297,6 +330,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'DELETE',
         url: `/heroes`,
+        headers,
       });
 
       const expectedPayloadObject = { n: 20, ok: 1, deletedCount: 20 };
@@ -314,6 +348,7 @@ describe.only('Test to api hereoes', () => {
       const result = await app.inject({
         method: 'DELETE',
         url: `/heroes/${_id}`,
+        headers,
       });
 
       const payloadObject = JSON.parse(result.payload);

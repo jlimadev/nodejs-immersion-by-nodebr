@@ -55,6 +55,7 @@ const main = async () => {
     });
 
     app.auth.default('jwt');
+
     app.route([
       ...mapRoutes(new HeroRoutes(context), HeroRoutes.methods()),
       ...mapRoutes(new AuthRoutes(JWT_SECRET), AuthRoutes.methods()),
