@@ -1,13 +1,14 @@
 const assert = require('assert');
 const api = require('../api');
 let app = {};
+let GENERATED_TOKEN = '';
 
 describe.only('Auth test suit', () => {
   before(async () => {
     app = await api;
   });
 
-  it('should get a token when use the correct credentials', async () => {
+  it('Should get a token when use the correct credentials', async () => {
     const result = await app.inject({
       method: 'POST',
       url: '/login',
@@ -19,12 +20,13 @@ describe.only('Auth test suit', () => {
 
     const { statusCode, payload } = result;
     const data = JSON.parse(payload);
+    GENERATED_TOKEN = data.token;
 
     assert.ok(statusCode === 200);
     assert.ok(data.token.length > 10);
   });
 
-  it('should not get a token when use the incorrect credentials', async () => {
+  it('Should not get a token when use the incorrect credentials', async () => {
     const result = await app.inject({
       method: 'POST',
       url: '/login',
