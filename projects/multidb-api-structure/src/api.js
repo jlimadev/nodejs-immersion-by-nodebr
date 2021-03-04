@@ -57,7 +57,17 @@ const main = async () => {
       options: {
         expiresIn: 3600,
       },
-      validate: (data, request) => {
+      validate: async (data, request) => {
+        const result = await contextPostgres.read({
+          username: data.username,
+          id: data.id,
+        });
+
+        if (!result) {
+          return {
+            isValid: false,
+          };
+        }
         return {
           isValid: true,
         };

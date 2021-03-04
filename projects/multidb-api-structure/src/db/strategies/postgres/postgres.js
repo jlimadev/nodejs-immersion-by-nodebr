@@ -18,8 +18,8 @@ class Postgres extends ICrud {
 
   async update(id, item, upsert = false) {
     return upsert
-      ? await this._schema.update(item, { where: { id: id } })
-      : await this._schema.upsert(item);
+      ? await this._schema.upsert(item)
+      : await this._schema.update(item, { where: { id } });
   }
 
   async delete(id) {

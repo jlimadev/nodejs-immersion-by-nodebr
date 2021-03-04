@@ -13,9 +13,6 @@ describe('Mongodb Strategy', () => {
     context = new Context(new MongoDb(connection, HeroesSchema));
 
     await context.delete();
-    const createdHero = await context.create(MOCK_HERO);
-
-    REF_ID = createdHero._id;
   });
 
   after(async () => {
@@ -31,7 +28,8 @@ describe('Mongodb Strategy', () => {
   });
 
   it('Should CREATE a hero in the mongodb', async () => {
-    const { name, power } = await context.create(MOCK_HERO);
+    const { _id, name, power } = await context.create(MOCK_HERO);
+    REF_ID = _id;
     const responseBody = { name, power };
     deepStrictEqual(responseBody, MOCK_HERO);
   });

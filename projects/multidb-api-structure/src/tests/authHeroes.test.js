@@ -18,7 +18,7 @@ const DAFAULT_USER_DB = {
 
 let app = {};
 
-describe.only('Auth test suit', () => {
+describe('Auth test suit', () => {
   before(async () => {
     app = await api;
 
