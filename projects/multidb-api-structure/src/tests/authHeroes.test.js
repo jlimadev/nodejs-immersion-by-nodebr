@@ -1,20 +1,35 @@
 const assert = require('assert');
 const api = require('../api');
+const Context = require('../db/strategies/base/contextStrategy');
+const Postgres = require('../db/strategies/postgres/postgres');
+const usersSchema = require('../db/strategies/postgres/schemas/usersSchema');
+
+const DEFAULT_USER = {
+  username: 'anyusername',
+  password: 'anypassword',
+};
+
+const DAFAULT_USER_DB = {
+  ...DEFAULT_USER,
+  password: '',
+};
+
 let app = {};
 
 describe('Auth test suit', () => {
   before(async () => {
     app = await api;
+
+    const connection = await Postgres.connect();
+    const model = await Postgres.defineModel(connection, usersSchema);
+    const context = new Context(new Postgres(connection, model));
   });
 
   it('Should get a token when use the correct credentials', async () => {
     const result = await app.inject({
       method: 'POST',
       url: '/login',
-      payload: {
-        username: 'anyusername',
-        password: 'anypassword',
-      },
+      payload: DEFAULT_USER,
     });
 
     const { statusCode, payload } = result;
