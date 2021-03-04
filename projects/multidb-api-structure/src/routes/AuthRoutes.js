@@ -42,12 +42,12 @@ class AuthRoutes extends BaseRoute {
             username: username.toLowerCase(),
           });
 
-          const matchPassword = PasswordHelper.comparePassword(
+          const passwordMatches = PasswordHelper.comparePassword(
             password,
             user.password,
           );
 
-          if (!user || !matchPassword) {
+          if (!user || !passwordMatches) {
             const error = {
               statusCode: 401,
               error: 'Unauthorized',
@@ -59,7 +59,7 @@ class AuthRoutes extends BaseRoute {
           const token = JWT.sign(
             {
               username,
-              id: 1,
+              id: user.id,
             },
             this.secret,
           );

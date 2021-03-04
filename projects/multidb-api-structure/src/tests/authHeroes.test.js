@@ -16,13 +16,13 @@ const DAFAULT_USER_DB = {
 
 let app = {};
 
-describe('Auth test suit', () => {
+describe.only('Auth test suit', () => {
   before(async () => {
     app = await api;
 
     const connection = await Postgres.connect();
     const model = await Postgres.defineModel(connection, usersSchema);
-    const context = new Context(new Postgres(connection, model));
+    const addNewUser = await model.update(null, DAFAULT_USER_DB, true);
   });
 
   it('Should get a token when use the correct credentials', async () => {
