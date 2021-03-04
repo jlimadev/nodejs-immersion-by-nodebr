@@ -1,6 +1,7 @@
 const BaseRoute = require('./base/BaseRoute');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
+const PasswordHelper = require('../helpers/PasswordHelper');
 
 const failAction = (req, res, error) => {
   throw error;
@@ -12,9 +13,10 @@ const USER = {
 };
 
 class AuthRoutes extends BaseRoute {
-  constructor(secret) {
+  constructor(secret, db) {
     super();
     this.secret = secret;
+    this.db = db;
   }
 
   login() {
@@ -36,10 +38,16 @@ class AuthRoutes extends BaseRoute {
         handler: (req, res) => {
           const { username, password } = req.payload;
 
-          if (
-            username.toLowerCase() !== USER.username ||
-            password !== USER.password
-          ) {
+          const [user] = this.db.read({
+            username: username.toLowerCase(),
+          });
+
+          const matchPassword = PasswordHelper.comparePassword(
+            password,
+            user.password,
+          );
+
+          if (!user || !matchPassword) {
             const error = {
               statusCode: 401,
               error: 'Unauthorized',
