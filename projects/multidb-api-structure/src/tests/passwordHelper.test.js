@@ -4,7 +4,7 @@ const PasswordHelper = require('../helpers/PasswordHelper');
 const PASSWORD = 'SUPERBIGPASS';
 let generatedHash = '';
 
-describe.only('Password helper test suit', () => {
+describe('Password helper test suit', () => {
   it('Should generate a hash starting from a password', async () => {
     const result = await PasswordHelper.hashPassword(PASSWORD);
     generatedHash = result;

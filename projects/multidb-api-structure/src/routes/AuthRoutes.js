@@ -35,17 +35,16 @@ class AuthRoutes extends BaseRoute {
           }),
           failAction,
         },
-        handler: (req, res) => {
+        handler: async (req, res) => {
           const { username, password } = req.payload;
 
-          const [user] = this.db.read({
+          const [user] = await this.db.read({
             username: username.toLowerCase(),
           });
 
-          const passwordMatches = PasswordHelper.comparePassword(
-            password,
-            user.password,
-          );
+          const passwordMatches = user
+            ? PasswordHelper.comparePassword(password, user.password)
+            : false;
 
           if (!user || !passwordMatches) {
             const error = {
