@@ -13,7 +13,7 @@ class ICrud {
     throw new NotImplementedException();
   }
 
-  update(id, item) {
+  update(id, item, upsert) {
     throw new NotImplementedException();
   }
 
