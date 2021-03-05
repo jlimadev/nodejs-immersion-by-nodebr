@@ -26,6 +26,30 @@ const createHandler = (db) => async (req, res) => {
   }
 };
 
+const updateHandler = (db) => async (req, res) => {
+  const { payload, params } = req;
+
+  try {
+    const { id } = params;
+    const strPayload = JSON.stringify(payload);
+    const patchData = JSON.parse(strPayload);
+
+    return await db.update(id, patchData);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const deleteHandler = (db) => async (req, res) => {
+  const { params } = req;
+  try {
+    const { id } = params;
+    return await db.delete(id);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const query = Joi.object({
   skip: Joi.number().default(0),
   limit: Joi.number().default(10),
@@ -100,19 +124,7 @@ class HeroRoutes extends BaseRoute {
           headers,
           failAction,
         },
-        handler: async (req, res) => {
-          const { payload, params } = req;
-
-          try {
-            const { id } = params;
-            const strPayload = JSON.stringify(payload);
-            const patchData = JSON.parse(strPayload);
-
-            return await this.db.update(id, patchData);
-          } catch (error) {
-            throw new Error(error);
-          }
-        },
+        handler: updateHandler(this.db),
       },
     };
   }
@@ -132,15 +144,7 @@ class HeroRoutes extends BaseRoute {
           headers,
           failAction,
         },
-        handler: async (req, res) => {
-          const { params } = req;
-          try {
-            const { id } = params;
-            return await this.db.delete(id);
-          } catch (error) {
-            throw new Error(error);
-          }
-        },
+        handler: deleteHandler(this.db),
       },
     };
   }
