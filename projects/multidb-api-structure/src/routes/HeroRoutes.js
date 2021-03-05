@@ -1,12 +1,41 @@
 const BaseRoute = require('./base/BaseRoute');
 const Joi = require('joi');
+
 const failAction = (req, res, error) => {
   throw error;
 };
 
+const listHandler = (db) => (req, res) => {
+  const { query } = req;
+  try {
+    const { name, skip, limit } = query;
+    const search = name ? { name: { $regex: `.*${name}*.` } } : {};
+    return db.read(search, skip, limit);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const createHandler = (db) => async (req, res) => {
+  const { payload } = req;
+  try {
+    const { name, power } = payload;
+    return await db.create({ name, power });
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const query = Joi.object({
+  skip: Joi.number().default(0),
+  limit: Joi.number().default(10),
+  name: Joi.string().min(3).max(100),
+});
+
 const headers = Joi.object({
   authorization: Joi.string().required(),
 }).unknown();
+
 class HeroRoutes extends BaseRoute {
   constructor(db) {
     super();
@@ -22,24 +51,11 @@ class HeroRoutes extends BaseRoute {
         description: 'list all heroes',
         notes: 'returns heroes from database',
         validate: {
-          query: Joi.object({
-            skip: Joi.number().default(0),
-            limit: Joi.number().default(10),
-            name: Joi.string().min(3).max(100),
-          }),
+          query,
           headers,
           failAction,
         },
-        handler: (req, res) => {
-          const { query } = req;
-          try {
-            const { name, skip, limit } = query;
-            const search = name ? { name: { $regex: `.*${name}*.` } } : {};
-            return this.db.read(search, skip, limit);
-          } catch (error) {
-            throw new Error(error);
-          }
-        },
+        handler: listHandler(this.db),
       },
     };
   }
@@ -60,15 +76,7 @@ class HeroRoutes extends BaseRoute {
           headers,
           failAction,
         },
-        handler: async (req, res) => {
-          const { payload } = req;
-          try {
-            const { name, power } = payload;
-            return await this.db.create({ name, power });
-          } catch (error) {
-            throw new Error(error);
-          }
-        },
+        handler: createHandler(this.db),
       },
     };
   }
