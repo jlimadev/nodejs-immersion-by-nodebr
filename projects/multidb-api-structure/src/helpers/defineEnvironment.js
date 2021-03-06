@@ -12,6 +12,12 @@ const defineEnvironment = (env) => {
   config({
     path: configPath,
   });
+
+  const message = `Environment successfuly set to ${env}`;
+
+  return {
+    message,
+  };
 };
 
 module.exports = defineEnvironment;
