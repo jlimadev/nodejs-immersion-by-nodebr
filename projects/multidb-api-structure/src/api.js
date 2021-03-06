@@ -1,18 +1,3 @@
-const Context = require('./db/strategies/base/contextStrategy');
-const MongoDB = require('./db/strategies/mongodb/mongodb');
-const Postgres = require('./db/strategies/postgres/postgres');
-const usersSchema = require('./db/strategies/postgres/schemas/usersSchema');
-const heroesSchema = require('./db/strategies/mongodb/schemas/heroesSchema');
-const HeroRoutes = require('./routes/HeroRoutes');
-const AuthRoutes = require('./routes/AuthRoutes');
-
-const Hapi = require('@hapi/hapi');
-const Vision = require('@hapi/vision');
-const Inert = require('@hapi/inert');
-const HapiSwagger = require('hapi-swagger');
-const HapiAuthJWT = require('hapi-auth-jwt2');
-const JWT_SECRET = process.env.JWT_SECRET;
-
 const { config } = require('dotenv');
 const { join } = require('path');
 const { ok } = require('assert');
@@ -29,6 +14,21 @@ console.log(configPath);
 config({
   path: configPath,
 });
+
+const Context = require('./db/strategies/base/contextStrategy');
+const MongoDB = require('./db/strategies/mongodb/mongodb');
+const Postgres = require('./db/strategies/postgres/postgres');
+const usersSchema = require('./db/strategies/postgres/schemas/usersSchema');
+const heroesSchema = require('./db/strategies/mongodb/schemas/heroesSchema');
+const HeroRoutes = require('./routes/HeroRoutes');
+const AuthRoutes = require('./routes/AuthRoutes');
+
+const Hapi = require('@hapi/hapi');
+const Vision = require('@hapi/vision');
+const Inert = require('@hapi/inert');
+const HapiSwagger = require('hapi-swagger');
+const HapiAuthJWT = require('hapi-auth-jwt2');
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const app = new Hapi.Server({
   port: process.env.PORT,
