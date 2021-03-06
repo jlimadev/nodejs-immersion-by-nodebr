@@ -43,9 +43,9 @@ class Postgres extends ICrud {
       quoteIdentifiers: false,
       operatorsAliases: 0,
       logging: false,
-      ssl: process.env.POSTGRES_SSL,
+      ssl: process.env.ENVIRONMENT === 'prod',
       dialectOptions: {
-        ssl: process.env.POSTGRES_SSL,
+        ssl: process.env.ENVIRONMENT === 'prod',
       },
     });
     return connection;
