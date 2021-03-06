@@ -1,19 +1,8 @@
-const { config } = require('dotenv');
-const { join } = require('path');
-const { ok } = require('assert');
-const env = process.env.NODE_ENV || 'devl';
-
-ok(
-  env === 'prod' || env === 'devl',
-  'Invalid Enviroment. Must be devl or prod',
-);
-
-const configPath = join(__dirname, '../config', `.env.${env}`);
-console.log(configPath);
-
-config({
-  path: configPath,
-});
+const Hapi = require('@hapi/hapi');
+const Vision = require('@hapi/vision');
+const Inert = require('@hapi/inert');
+const HapiSwagger = require('hapi-swagger');
+const HapiAuthJWT = require('hapi-auth-jwt2');
 
 const Context = require('./db/strategies/base/contextStrategy');
 const MongoDB = require('./db/strategies/mongodb/mongodb');
@@ -23,11 +12,10 @@ const heroesSchema = require('./db/strategies/mongodb/schemas/heroesSchema');
 const HeroRoutes = require('./routes/HeroRoutes');
 const AuthRoutes = require('./routes/AuthRoutes');
 
-const Hapi = require('@hapi/hapi');
-const Vision = require('@hapi/vision');
-const Inert = require('@hapi/inert');
-const HapiSwagger = require('hapi-swagger');
-const HapiAuthJWT = require('hapi-auth-jwt2');
+const defineEnvironment = require('./helpers/defineEnvironment');
+const env = process.env.NODE_ENV || 'devl';
+defineEnvironment(env);
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const app = new Hapi.Server({
