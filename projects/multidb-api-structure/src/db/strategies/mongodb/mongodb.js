@@ -44,8 +44,9 @@ class MongoDb extends ICrud {
   }
 
   static connect() {
+    const mongoURL = process.env.MONGODB_URL;
     Mongoose.connect(
-      'mongodb://jlimadev:secretpass@localhost:27017/heroes',
+      mongoURL,
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,

@@ -12,7 +12,7 @@ const MOCK_CREATE_HERO = {
   power: 'Any Power',
 };
 
-describe.only('Test to api hereoes', () => {
+describe('Test to api hereoes', () => {
   before(async () => {
     app = await api;
 
