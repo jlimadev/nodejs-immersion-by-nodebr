@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-immersion-by-nodebr",
+  "name": "nodejs-immersion",
   "version": "1.0.0",
-  "description": "NodeJS immersion by @nodebr and @erickwendel",
+  "description": "NodeJS immersion",
   "author": "jlimadev",
   "license": "MIT",
   "private": true,

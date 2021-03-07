@@ -1,12 +1,13 @@
 {
   "name": "multidb-api-structure",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./src/api.js",
   "license": "MIT",
   "scripts": {
     "test": "mocha ./src/tests/*.test.js",
     "test:prod": "cross-env NODE_ENV=prod yarn test",
-    "test:watch": "mocha ./src/tests/*.test.js -w"
+    "test:watch": "mocha ./src/tests/*.test.js -w",
+    "prod": "cross-env NODE_ENV=prod node ./src/api.js"
   },
   "dependencies": {
     "@hapi/hapi": "^19.0.0",

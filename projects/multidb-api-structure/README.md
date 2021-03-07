@@ -50,6 +50,9 @@ docker run \
 ```
 
 We can also use DBeaver or PGAdmin to access our postgres.
+With postgres we must install dependencies bellow:
+
+`yarn add sequelize pg-hstore pg`
 
 ### MongoDB
 
@@ -84,5 +87,6 @@ docker run \
 
 We can also use MongoDBCompass
 
-With postgres we must install the packages bellow
-`yarn add sequelize pg-hstore pg`
+### Cloud Mongo DB (PROD)
+
+PROD database with cloud.mongodb.com from mlabs.
