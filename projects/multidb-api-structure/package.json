@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha ./src/tests/*.test.js",
+    "test:prod": "cross-env NODE_ENV=prod yarn test",
     "test:watch": "mocha ./src/tests/*.test.js -w"
   },
   "dependencies": {
@@ -12,6 +13,7 @@
     "@hapi/inert": "^6.0.3",
     "@hapi/vision": "^6.0.1",
     "bcrypt": "^5.0.1",
+    "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
     "hapi-auth-jwt2": "^10.2.0",
     "hapi-swagger": "^14.1.0",
