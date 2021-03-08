@@ -8,7 +8,8 @@
     "test:prod": "cross-env NODE_ENV=prod yarn test",
     "test:watch": "mocha ./src/tests/*.test.js -w",
     "prod": "cross-env NODE_ENV=prod node ./src/api.js",
-    "start": "cross-env NODE_ENV=prod node ./src/api.js"
+    "start": "cross-env NODE_ENV=prod node ./src/api.js",
+    "start:dev": "cross-env NODE_ENV=devl node ./src/api.js"
   },
   "dependencies": {
     "@hapi/hapi": "^19.0.0",
