@@ -90,3 +90,15 @@ We can also use MongoDBCompass
 ### Cloud Mongo DB (PROD)
 
 PROD database with cloud.mongodb.com from mlabs.
+
+### HEROKU
+
+Since this repository is a monorepo, we need to set this only project to deploy on heroku.
+
+```
+heroku config:set -a nodebr-jlimadev-api-multidb APP_BASE=projects/multidb-api-structure
+
+heroku buildpacks:add -i 1 -a nodebr-jlimadev-api-multidb https://github.com/lstoll/heroku-buildpack-monorepo
+
+git push git@heroku.com:nodebr-jlimadev-api-multidb main
+```
