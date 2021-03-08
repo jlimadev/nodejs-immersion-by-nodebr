@@ -202,7 +202,12 @@ describe('Test to api hereoes', () => {
       });
 
       const { statusCode, statusMessage, payload } = result;
-      const payloadObject = JSON.parse(payload);
+      const response = JSON.parse(payload);
+      const payloadObject = {
+        n: response.n,
+        nModified: response.nModified,
+        ok: response.ok,
+      };
 
       assert.ok(statusCode === 200);
       assert.ok(statusMessage === 'OK');
@@ -220,7 +225,12 @@ describe('Test to api hereoes', () => {
 
       const { statusCode, statusMessage, payload } = result;
       const expectedPayloadObject = { n: 0, nModified: 0, ok: 1 };
-      const payloadObject = JSON.parse(payload);
+      const response = JSON.parse(payload);
+      const payloadObject = {
+        n: response.n,
+        nModified: response.nModified,
+        ok: response.ok,
+      };
 
       assert.ok(statusCode === 200);
       assert.ok(statusMessage === 'OK');
@@ -296,7 +306,12 @@ describe('Test to api hereoes', () => {
       const expectedPayloadObject = { n: 1, ok: 1, deletedCount: 1 };
 
       const { statusCode, statusMessage, payload } = result;
-      const payloadObject = JSON.parse(payload);
+      const response = JSON.parse(payload);
+      const payloadObject = {
+        n: response.n,
+        ok: response.ok,
+        deletedCount: response.deletedCount,
+      };
 
       assert.ok(statusCode === 200);
       assert.ok(statusMessage === 'OK');
@@ -336,7 +351,12 @@ describe('Test to api hereoes', () => {
       const expectedPayloadObject = { n: 20, ok: 1, deletedCount: 20 };
 
       const { statusCode, statusMessage, payload } = result;
-      const payloadObject = JSON.parse(payload);
+      const response = JSON.parse(payload);
+      const payloadObject = {
+        n: response.n,
+        ok: response.ok,
+        deletedCount: response.deletedCount,
+      };
 
       assert.ok(statusCode === 200);
       assert.ok(statusMessage === 'OK');
