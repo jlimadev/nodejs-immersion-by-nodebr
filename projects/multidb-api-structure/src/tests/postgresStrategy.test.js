@@ -65,6 +65,17 @@ describe('Postgres Srategy', () => {
     deepStrictEqual(newItem, updatedResponseBody);
   });
 
+  it('Should UPSERT with only the data on postgres database', async () => {
+    const newItem = { ...MOCK_HERO, power: 'upsert' };
+
+    const [updatedItem] = await context.update(null, newItem, true);
+    const { dataValues } = updatedItem;
+
+    const result = { name: dataValues.name, power: dataValues.power };
+
+    deepStrictEqual(result, newItem);
+  });
+
   it('Should DELETE by <ID> from postgres database', async () => {
     const [itemToDelete] = await context.read({ name: MOCK_HERO.name });
     const result = await context.delete(itemToDelete.id);
