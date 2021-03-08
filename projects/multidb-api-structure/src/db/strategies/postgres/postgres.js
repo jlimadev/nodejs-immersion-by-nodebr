@@ -39,14 +39,18 @@ class Postgres extends ICrud {
 
   static async connect() {
     const postgresURL = process.env.POSTGRES_URL;
+    const sslOptions = {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    };
+    const ssl = process.env.ENVIRONMENT === 'prod' ? sslOptions : {};
     const connection = new Sequelize(postgresURL, {
       quoteIdentifiers: false,
       operatorsAliases: 0,
       logging: false,
-      ssl: process.env.ENVIRONMENT === 'prod',
-      dialectOptions: {
-        ssl: process.env.ENVIRONMENT === 'prod',
-      },
+      dialectOptions: ssl,
     });
     return connection;
   }
