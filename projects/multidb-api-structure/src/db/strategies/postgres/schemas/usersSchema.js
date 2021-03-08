@@ -4,7 +4,7 @@ const UsersSchema = {
   name: 'users',
   schema: {
     id: {
-      type: Sequelize.UUIDV4,
+      type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
       required: true,
       primaryKey: true,
